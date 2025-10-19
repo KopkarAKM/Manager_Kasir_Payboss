@@ -372,6 +372,19 @@
             const items = order.items.map(i => `${i.name} x${i.qty}`).join(', ');
             const time = order.createdAt?.seconds ? new Date(order.createdAt.seconds * 1000).toLocaleTimeString('id-ID') : '...';
 
+            // Menampilkan rincian pajak
+            let detailsHtml;
+            if (order.subtotal !== undefined && order.tax !== undefined) {
+                 detailsHtml = `
+                    <strong>Subtotal:</strong> Rp ${order.subtotal.toLocaleString('id-ID')}<br>
+                    <strong>Pajak (10%):</strong> Rp ${order.tax.toLocaleString('id-ID')}<br>
+                    <strong>Grand Total:</strong> Rp ${order.total.toLocaleString('id-ID')} | <strong>Waktu:</strong> ${time}
+                `;
+            } else {
+                // Fallback untuk data lama yang belum ada pajak
+                detailsHtml = `<strong>Total:</strong> Rp ${order.total.toLocaleString('id-ID')} | <strong>Waktu:</strong> ${time}`;
+            }
+
             div.innerHTML = `
                 <div class="order-header">
                     <span class="order-id">Meja ${order.table} - ${order.customer}</span>
@@ -379,7 +392,7 @@
                 </div>
                 <div class="order-details">
                     <strong>Pesanan:</strong> ${items}<br>
-                    <strong>Total:</strong> Rp ${order.total.toLocaleString('id-ID')} | <strong>Waktu:</strong> ${time}
+                    ${detailsHtml}
                 </div>
                 <div style="margin-top: 10px;">${buttons}</div>
             `;
@@ -418,7 +431,7 @@
                 order.items.forEach(item => {
                     if (!sales[item.name]) sales[item.name] = { qty: 0, revenue: 0 };
                     sales[item.name].qty += item.qty;
-                    sales[item.name].revenue += item.price * item.qty;
+                    sales[item.name].revenue += (item.price * item.qty); // Pendapatan per item dihitung dari subtotal
                 });
             });
             const sorted = Object.entries(sales).sort(([,a],[,b]) => b.qty - a.qty).slice(0, 3);
@@ -426,7 +439,7 @@
             container.innerHTML = sorted.map(([name, data], i) => `
                 <div class="order-item">
                     <div class="order-header"><span class="order-id">${medals[i]} ${name}</span><span class="order-status status-ready">${data.qty} porsi</span></div>
-                    <div class="order-details">Pendapatan: Rp ${data.revenue.toLocaleString('id-ID')}</div>
+                    <div class="order-details">Pendapatan (sblm pajak): Rp ${data.revenue.toLocaleString('id-ID')}</div>
                 </div>
             `).join('');
         }
@@ -521,22 +534,24 @@
                         return;
                     }
                     
-                    const headers = ["ID Pesanan", "Tanggal Selesai", "Waktu Selesai", "Nama Pelanggan", "No. Meja", "Item Dipesan", "Total Belanja", "Metode Bayar"];
+                    const headers = ["ID Pesanan", "Tanggal Selesai", "Waktu Selesai", "Nama Pelanggan", "No. Meja", "Item Dipesan", "Subtotal", "Pajak (10%)", "Grand Total", "Metode Bayar"];
                     const csvRows = [headers.join(',')];
                     
                     reportData.sort((a, b) => a.completedAt.seconds - b.completedAt.seconds);
 
                     for (const order of reportData) {
                         const date = new Date(order.completedAt.seconds * 1000);
-                        const orderId = order.id.substring(0, 6);
+                        const orderId = doc.id.substring(0, 6); // Ambil dari doc.id
                         const formattedDate = date.toLocaleDateString('id-ID', { year: 'numeric', month: '2-digit', day: '2-digit' });
                         const formattedTime = date.toLocaleTimeString('id-ID');
                         const customer = `"${order.customer}"`;
                         const table = order.table;
                         const items = `"${order.items.map(i => `${i.name} x${i.qty}`).join('; ')}"`;
-                        const total = order.total;
+                        const subtotal = order.subtotal !== undefined ? order.subtotal : "N/A";
+                        const tax = order.tax !== undefined ? order.tax : "N/A";
+                        const grandTotal = order.total;
                         const payment = `"${order.paymentMethod}"`;
-                        csvRows.push([orderId, formattedDate, formattedTime, customer, table, items, total, payment].join(','));
+                        csvRows.push([orderId, formattedDate, formattedTime, customer, table, items, subtotal, tax, grandTotal, payment].join(','));
                     }
 
                     const csvContent = csvRows.join('\n');
