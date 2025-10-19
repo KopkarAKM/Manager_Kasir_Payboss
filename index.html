@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payboss Cafe - Sistem Terintegrasi</title>
+    <title>Portal Staf - Payboss Cafe</title>
     <style>
         body {
             box-sizing: border-box;
@@ -95,151 +95,6 @@
             margin: 0;
             opacity: 0.9;
             font-size: 1.1rem;
-        }
-
-        /* Menu Page Styles */
-        .tabs {
-            display: flex;
-            background: #3E2723;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .tab-button {
-            flex: none;
-            padding: 18px 20px;
-            background: none;
-            border: none;
-            color: #D2B48C;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-            min-width: 140px;
-            text-align: center;
-        }
-
-        .tab-button:hover {
-            background: rgba(210, 180, 140, 0.1);
-            color: #FFFFFF;
-        }
-
-        .tab-button.active {
-            background: #8B4513;
-            color: #FFFFFF;
-            box-shadow: inset 0 -3px 0 #D2B48C;
-        }
-
-        .tab-content {
-            display: none;
-            padding: 25px;
-            animation: fadeIn 0.3s ease-in;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .category-title {
-            font-size: 2rem;
-            color: #3E2723;
-            margin-bottom: 25px;
-            text-align: center;
-            font-weight: bold;
-        }
-
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 20px;
-        }
-
-        .menu-item {
-            background: #FFFFFF;
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-            border-left: 5px solid #8B4513;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .menu-item-content {
-            flex-grow: 1;
-        }
-
-        .menu-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #8B4513, #D2B48C);
-        }
-
-        .menu-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-            border-left-color: #D2B48C;
-        }
-
-        .item-name {
-            font-size: 1.3rem;
-            font-weight: bold;
-            color: #3E2723;
-            margin-bottom: 8px;
-        }
-
-        .item-description {
-            color: #666;
-            font-size: 0.95rem;
-            margin-bottom: 12px;
-            line-height: 1.5;
-        }
-
-        .item-variants {
-            background: #f8f9fa;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            font-size: 0.9rem;
-            color: #555;
-        }
-
-        .item-price {
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: #8B4513;
-            margin-bottom: 15px;
-        }
-
-        .order-btn {
-            background: linear-gradient(135deg, #8B4513 0%, #A0522D 100%);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            width: 100%;
-            transition: all 0.3s ease;
-            font-size: 1rem;
-            margin-top: auto;
-        }
-
-        .order-btn:hover {
-            background: linear-gradient(135deg, #A0522D 0%, #8B4513 100%);
-            transform: translateY(-2px);
         }
 
         /* Dashboard Styles */
@@ -347,7 +202,6 @@
         .action-btn.success { background: #28a745; }
         .action-btn.success:hover { background: #218838; }
 
-        /* Notification */
         .notification {
             position: fixed; top: 20px; right: 20px; background: #8B4513;
             color: white; padding: 15px 20px; border-radius: 8px; z-index: 2000;
@@ -355,114 +209,30 @@
             transform: translateX(calc(100% + 30px)); transition: transform 0.4s ease-in-out;
         }
         .notification.show { transform: translateX(0); }
-
-        /* Floating Cart Button */
-        .cart-fab {
-            position: fixed; bottom: 30px; right: 30px; background: #3E2723;
-            color: white; width: 60px; height: 60px; border-radius: 50%;
-            display: flex; justify-content: center; align-items: center;
-            font-size: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            cursor: pointer; z-index: 1001; transition: transform 0.2s ease;
-        }
-        .cart-fab:hover { transform: scale(1.1); }
-        .cart-badge {
-            position: absolute; top: -5px; right: -5px; background: #D32F2F;
-            color: white; font-size: 12px; font-weight: bold; width: 24px;
-            height: 24px; border-radius: 50%; display: flex;
-            justify-content: center; align-items: center;
-        }
-
-        /* Modal Styles */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); display: flex; justify-content: center;
-            align-items: center; z-index: 2000; opacity: 0; visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-        }
-        .modal-overlay.show { opacity: 1; visibility: visible; }
-        .modal-content {
-            background: white; padding: 30px; border-radius: 15px; width: 90%;
-            max-width: 500px; max-height: 90vh; overflow-y: auto;
-            transform: scale(0.9); transition: transform 0.3s ease;
-        }
-        .modal-overlay.show .modal-content { transform: scale(1); }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .modal-header h2 { margin: 0; color: #3E2723; }
-        .modal-close { font-size: 24px; cursor: pointer; color: #888; border: none; background: none;}
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: 500; }
-        .form-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-        .cart-item { display: flex; align-items: center; margin-bottom: 15px; }
-        .cart-item-details { flex-grow: 1; }
-        .cart-item-actions { display: flex; align-items: center; }
-        .quantity-btn { background: #eee; border: 1px solid #ccc; padding: 5px 10px; cursor: pointer; }
-        .item-quantity { padding: 0 10px; }
-        .remove-btn { color: #D32F2F; margin-left: 15px; cursor: pointer; border: none; background: none; font-size: 16px; }
-        .cart-total { text-align: right; font-size: 1.2rem; font-weight: bold; margin-top: 20px; }
-        .payment-options button { width: 100%; padding: 15px; margin-bottom: 10px; font-size: 1rem; border: 1px solid #ccc; border-radius: 8px; cursor: pointer; }
-        #qris-image { max-width: 100%; border-radius: 8px; }
-        .whatsapp-btn { background: #25D366; color: white; display: block; text-align: center; padding: 15px; border-radius: 8px; text-decoration: none; font-weight: bold; }
-
-        /* Responsive */
+        
         @media (max-width: 768px) {
             .nav-bar { flex-direction: column; gap: 10px; }
             .nav-links { justify-content: center; flex-wrap: wrap; gap: 5px; }
             .container { padding: 10px; }
             .dashboard-grid, .order-list { padding: 15px; margin: 0 10px 15px 10px; }
             .page-header h1 { font-size: 2rem; }
-            .menu-grid { grid-template-columns: 1fr; }
             .dashboard-grid { grid-template-columns: 1fr; }
             .order-header { flex-direction: column; align-items: flex-start; gap: 10px; }
         }
-
-        /* Loading Animation */
-        .loading {
-            display: inline-block; width: 16px; height: 16px;
-            border: 3px solid rgba(255,255,255,0.3); border-top-color: #fff;
-            border-radius: 50%; animation: spin 1s linear infinite;
-            vertical-align: middle; margin-right: 5px;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-    <!-- Navigation (for staff) -->
     <nav class="nav-bar">
-        <a href="#" class="nav-brand">☕ Payboss Cafe</a>
+        <a href="#" class="nav-brand">☕ Portal Staf Payboss</a>
         <div class="nav-links">
-            <a href="#" class="nav-link active" data-page="menu">📋 Menu</a>
-            <a href="#" class="nav-link" data-page="cashier">💰 Kasir</a>
+            <a href="#" class="nav-link active" data-page="cashier">💰 Kasir</a>
             <a href="#" class="nav-link" data-page="kitchen">👨‍🍳 Dapur</a>
             <a href="#" class="nav-link" data-page="manager">📊 Manager</a>
         </div>
     </nav>
 
-    <!-- Main Content -->
     <div class="container">
-        <!-- Menu Page (for customers and staff) -->
-        <div id="menu-page" class="page active">
-            <div class="page-header">
-                <h1>📋 Menu Payboss Cafe</h1>
-                <p>Pilih kategori untuk melihat menu yang tersedia</p>
-            </div>
-
-            <div class="tabs">
-                <button class="tab-button active" data-tab="snacks">🍟 Makanan Ringan</button>
-                <button class="tab-button" data-tab="pastry">🥐 Roti & Manis</button>
-                <button class="tab-button" data-tab="main">🍛 Makanan Berat</button>
-                <button class="tab-button" data-tab="coffee">☕ Kopi</button>
-                <button class="tab-button" data-tab="non-coffee">🥤 Non-Kopi</button>
-            </div>
-
-            <div id="snacks" class="tab-content active"><h2 class="category-title">🍟 Makanan Ringan</h2><div class="menu-grid" id="snacks-grid"></div></div>
-            <div id="pastry" class="tab-content"><h2 class="category-title">🥐 Roti & Manis</h2><div class="menu-grid" id="pastry-grid"></div></div>
-            <div id="main" class="tab-content"><h2 class="category-title">🍛 Makanan Berat</h2><div class="menu-grid" id="main-grid"></div></div>
-            <div id="coffee" class="tab-content"><h2 class="category-title">☕ Kopi</h2><div class="menu-grid" id="coffee-grid"></div></div>
-            <div id="non-coffee" class="tab-content"><h2 class="category-title">🥤 Non-Kopi</h2><div class="menu-grid" id="non-coffee-grid"></div></div>
-        </div>
-        
-        <!-- Staff-only pages -->
-        <div id="cashier-page" class="page">
+        <div id="cashier-page" class="page active">
             <div class="page-header"><h1>💰 Sistem Kasir</h1><p>Kelola pesanan dan pembayaran pelanggan</p></div>
             <div class="dashboard-grid">
                 <div class="stat-card"><span class="stat-icon">🛒</span><div class="stat-value" id="total-orders">0</div><div class="stat-label">Total Pesanan Aktif</div></div>
@@ -490,23 +260,10 @@
             <div class="order-list"><h3>📊 Menu Terlaris Hari Ini</h3><div id="best-selling-list"><p>Belum ada data penjualan hari ini.</p></div></div>
         </div>
     </div>
-    
-    <!-- Floating Cart Button -->
-    <div class="cart-fab" id="cart-fab">
-        🛒
-        <span class="cart-badge" id="cart-badge">0</span>
-    </div>
 
-    <!-- Modals -->
-    <div class="modal-overlay" id="cart-modal"> <div class="modal-content"> <div class="modal-header"> <h2>Keranjang Anda</h2> <button class="modal-close">&times;</button> </div> <div id="cart-items"></div> <div class="cart-total" id="cart-total"></div> <hr> <div class="form-group"> <label for="customer-name">Nama Anda</label> <input type="text" id="customer-name" placeholder="Masukkan nama Anda"> </div> <div class="form-group"> <label for="table-number">Nomor Meja</label> <input type="number" id="table-number" placeholder="Masukkan nomor meja"> </div> <button class="order-btn" id="checkout-btn">Lanjutkan ke Pembayaran</button> </div> </div>
-    <div class="modal-overlay" id="payment-modal"> <div class="modal-content"> <div class="modal-header"> <h2>Pilih Metode Pembayaran</h2> <button class="modal-close">&times;</button> </div> <div class="payment-options"> <button id="pay-cash-btn">Bayar di Kasir (Cash)</button> <button id="pay-qris-btn">Bayar dengan QRIS</button> </div> </div> </div>
-    <div class="modal-overlay" id="qris-modal"> <div class="modal-content" style="text-align: center;"> <div class="modal-header"> <h2>Scan untuk Membayar</h2> <button class="modal-close">&times;</button> </div> <img id="qris-image" src="https://i.imgur.com/Pc4W6zN.jpeg" alt="QRIS Code"> <p style="margin-top: 15px;">Setelah membayar, klik tombol di bawah untuk mengirim bukti ke kasir via WhatsApp.</p> <button class="order-btn" id="confirm-qris-payment-btn">Saya Sudah Bayar & Kirim Bukti</button> </div> </div>
-    <div class="modal-overlay" id="success-modal"> <div class="modal-content" style="text-align: center;"> <div class="modal-header"> <h2>Pesanan Diterima!</h2> <button class="modal-close">&times;</button> </div> <div id="success-message"></div> <a href="#" id="whatsapp-link" class="whatsapp-btn" target="_blank" style="display: none; margin-top: 20px;">Kirim Pesanan ke Kasir</a> </div> </div>
-
-    <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serverTimestamp, query, where, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serverTimestamp, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         const firebaseConfig = {
           apiKey: "AIzaSyB0nHqdAw_dV9pHcQ_cSnWtNsn4CwwwUNc",
@@ -521,18 +278,8 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         
-        // === STATE APLIKASI ===
-        let cart = [];
         let activeOrders = [];
         let completedToday = [];
-        let menuCache = [];
-
-        // === FUNGSI UTAMA REAL-TIME ===
-        
-        onSnapshot(collection(db, 'menu'), (snapshot) => {
-            menuCache = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            renderAllMenus();
-        });
 
         onSnapshot(collection(db, 'orders'), (snapshot) => {
             activeOrders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -547,80 +294,20 @@
             updateAllDashboards();
         });
 
-        // === FUNGSI RENDER TAMPILAN ===
-        function renderAllMenus() {
-            document.querySelectorAll('.menu-grid').forEach(grid => grid.innerHTML = '');
-            menuCache.forEach(item => {
-                const grid = document.getElementById(`${item.category}-grid`);
-                if (grid) grid.appendChild(createMenuCard(item));
-            });
-        }
-
-        function createMenuCard(item) {
-            const card = document.createElement('div');
-            card.className = 'menu-item';
-            const variantsHtml = item.variants ? `<div class="item-variants"><strong>Varian:</strong> ${item.variants}</div>` : '';
-            card.innerHTML = `
-                <div class="menu-item-content">
-                    <div class="item-name">${item.name}</div>
-                    <div class="item-description">${item.description}</div>
-                    ${variantsHtml}
-                    <div class="item-price">Rp ${item.price.toLocaleString('id-ID')}</div>
-                </div>
-                <button class="order-btn" data-id="${item.id}">+ Keranjang</button>
-            `;
-            return card;
-        }
-
-        function renderCart() {
-            const cartItemsContainer = document.getElementById('cart-items');
-            const cartTotalEl = document.getElementById('cart-total');
-            cartItemsContainer.innerHTML = '';
-            let total = 0;
-
-            if (cart.length === 0) {
-                cartItemsContainer.innerHTML = '<p>Keranjang Anda masih kosong.</p>';
-            } else {
-                cart.forEach(item => {
-                    const itemTotal = item.price * item.qty;
-                    total += itemTotal;
-                    const cartItemEl = document.createElement('div');
-                    cartItemEl.className = 'cart-item';
-                    cartItemEl.innerHTML = `
-                        <div class="cart-item-details">
-                            <strong>${item.name}</strong><br>
-                            Rp ${itemTotal.toLocaleString('id-ID')}
-                        </div>
-                        <div class="cart-item-actions">
-                            <button class="quantity-btn" data-id="${item.id}" data-action="decrease">-</button>
-                            <span class="item-quantity">${item.qty}</span>
-                            <button class="quantity-btn" data-id="${item.id}" data-action="increase">+</button>
-                            <button class="remove-btn" data-id="${item.id}">&times;</button>
-                        </div>
-                    `;
-                    cartItemsContainer.appendChild(cartItemEl);
-                });
-            }
-            cartTotalEl.textContent = `Total: Rp ${total.toLocaleString('id-ID')}`;
-            document.getElementById('cart-badge').textContent = cart.reduce((sum, item) => sum + item.qty, 0);
-        }
-
         function renderStaffOrders() {
             const cashierContainer = document.getElementById('cashier-orders');
             const kitchenContainer = document.getElementById('kitchen-orders');
             if(!cashierContainer || !kitchenContainer) return;
-
             const kitchenQueue = activeOrders.filter(o => o.status === 'pending' || o.status === 'preparing');
             
             cashierContainer.innerHTML = activeOrders.length > 0 ? '' : '<p>Belum ada pesanan aktif.</p>';
             activeOrders.forEach(order => cashierContainer.appendChild(createOrderElement(order, 'cashier')));
-
             kitchenContainer.innerHTML = kitchenQueue.length > 0 ? '' : '<p>Tidak ada antrian di dapur.</p>';
             kitchenQueue.forEach(order => kitchenContainer.appendChild(createOrderElement(order, 'kitchen')));
         }
         
         function createOrderElement(order, type) {
-             const div = document.createElement('div');
+            const div = document.createElement('div');
             div.className = 'order-item';
             const statusMap = {
                 pending: { text: 'Menunggu', class: 'status-pending' },
@@ -651,37 +338,30 @@
             `;
             return div;
         }
-
-        // === FUNGSI PEMBARUAN DASHBOARD (DIPERBAIKI) ===
+        
         function updateAllDashboards() {
             const totalSales = completedToday.reduce((sum, order) => sum + order.total, 0);
-            
-            // Helper untuk update elemen jika ada
             const updateElementText = (id, text) => {
                 const el = document.getElementById(id);
                 if (el) el.textContent = text;
             };
             
-            // Statistik Kasir & Dapur
             updateElementText('total-orders', activeOrders.length);
             updateElementText('pending-orders', activeOrders.filter(o => o.status === 'pending').length);
             updateElementText('cooking-orders', activeOrders.filter(o => o.status === 'preparing').length);
             updateElementText('ready-orders', activeOrders.filter(o => o.status === 'ready').length);
             updateElementText('daily-revenue', `Rp ${totalSales.toLocaleString('id-ID')}`);
             updateElementText('completed-orders-kitchen', completedToday.length);
-
-            // Statistik Manager
             updateElementText('manager-total-sales', `Rp ${totalSales.toLocaleString('id-ID')}`);
             updateElementText('manager-total-orders', completedToday.length);
             const avgOrder = completedToday.length > 0 ? Math.round(totalSales / completedToday.length) : 0;
             updateElementText('manager-avg-order', `Rp ${avgOrder.toLocaleString('id-ID')}`);
-            
             updateBestSelling();
         }
         
         function updateBestSelling() {
              const container = document.getElementById('best-selling-list');
-             if(!container) return; // Tambahkan pengecekan
+             if(!container) return;
             if (completedToday.length === 0) {
                 container.innerHTML = '<p>Belum ada data penjualan hari ini.</p>';
                 return;
@@ -698,134 +378,18 @@
             const medals = ['🥇', '🥈', '🥉'];
             container.innerHTML = sorted.map(([name, data], i) => `
                 <div class="order-item">
-                    <div class="order-header">
-                        <span class="order-id">${medals[i]} ${name}</span>
-                        <span class="order-status status-ready">${data.qty} porsi</span>
-                    </div>
+                    <div class="order-header"><span class="order-id">${medals[i]} ${name}</span><span class="order-status status-ready">${data.qty} porsi</span></div>
                     <div class="order-details">Pendapatan: Rp ${data.revenue.toLocaleString('id-ID')}</div>
                 </div>
             `).join('');
         }
         
-        // === LOGIKA KERANJANG BELANJA (CART) ===
-        function addToCart(itemId) {
-            const itemInCart = cart.find(item => item.id === itemId);
-            if (itemInCart) {
-                itemInCart.qty++;
-            } else {
-                const itemFromMenu = menuCache.find(item => item.id === itemId);
-                cart.push({ ...itemFromMenu, qty: 1 });
-            }
-            showNotification(`${cart.find(i=>i.id===itemId).name} ditambahkan ke keranjang.`);
-            renderCart();
-        }
-
-        function updateCartQuantity(itemId, action) {
-            const itemInCart = cart.find(item => item.id === itemId);
-            if (!itemInCart) return;
-
-            if (action === 'increase') {
-                itemInCart.qty++;
-            } else if (action === 'decrease') {
-                itemInCart.qty--;
-                if (itemInCart.qty <= 0) {
-                    cart = cart.filter(item => item.id !== itemId);
-                }
-            }
-            renderCart();
-        }
-        
-        function removeFromCart(itemId) {
-            cart = cart.filter(item => item.id !== itemId);
-            renderCart();
-        }
-
-        async function placeOrder(paymentMethod) {
-            const customerName = document.getElementById('customer-name').value.trim();
-            const tableNumber = document.getElementById('table-number').value.trim();
-            
-            if (!customerName || !tableNumber) {
-                showNotification("Nama dan nomor meja wajib diisi!", true);
-                return;
-            }
-
-            const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-            const itemsForDB = cart.map(item => ({ name: item.name, qty: item.qty, price: item.price }));
-
-            const newOrder = {
-                customer: customerName,
-                table: tableNumber,
-                items: itemsForDB,
-                total: total,
-                status: 'pending', 
-                paymentMethod: paymentMethod,
-                createdAt: serverTimestamp()
-            };
-
-            try {
-                const docRef = await addDoc(collection(db, 'orders'), newOrder);
-                
-                const waNumber = "6285349972513";
-                let message = `*Pesanan Baru - Payboss Cafe*\n\n`;
-                message += `ID Pesanan: ${docRef.id.substring(0, 5)}\n`;
-                message += `Nama: *${customerName}*\n`;
-                message += `Meja: *${tableNumber}*\n\n`;
-                message += `*Item Pesanan:*\n`;
-                itemsForDB.forEach(item => {
-                    message += `- ${item.name} (x${item.qty})\n`;
-                });
-                message += `\nTotal: *Rp ${total.toLocaleString('id-ID')}*\n`;
-                message += `Pembayaran: *${paymentMethod}*\n\n`;
-                
-                const successMsgContainer = document.getElementById('success-message');
-                const waLink = document.getElementById('whatsapp-link');
-
-                if (paymentMethod === 'QRIS') {
-                    message += `_Mohon lampirkan bukti pembayaran Anda._`;
-                    successMsgContainer.innerHTML = `<p>Pesanan Anda telah diterima! Silakan kirim detail pesanan ini beserta bukti bayar ke WhatsApp kasir.</p>`;
-                    waLink.style.display = 'block';
-                } else { // Cash
-                    successMsgContainer.innerHTML = `<p>Pesanan Anda telah diterima! Silakan lakukan pembayaran di kasir dan tunjukkan ID Pesanan: <strong>${docRef.id.substring(0, 5)}</strong>.</p>`;
-                    waLink.style.display = 'none';
-                }
-
-                waLink.href = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
-                
-                cart = [];
-                renderCart();
-                closeAllModals();
-                document.getElementById('success-modal').classList.add('show');
-
-            } catch (error) {
-                console.error("Gagal membuat pesanan:", error);
-                showNotification("Gagal membuat pesanan!", true);
-            }
-        }
-
-        // === EVENT LISTENERS APLIKASI ===
-
         document.body.addEventListener('click', async function(e) {
-            const addToCartBtn = e.target.closest('.order-btn[data-id]');
-            if (addToCartBtn) {
-                addToCart(addToCartBtn.dataset.id);
-            }
-
-            const quantityBtn = e.target.closest('.quantity-btn');
-            if(quantityBtn){
-                updateCartQuantity(quantityBtn.dataset.id, quantityBtn.dataset.action);
-            }
-
-            const removeBtn = e.target.closest('.remove-btn');
-            if(removeBtn){
-                removeFromCart(removeBtn.dataset.id);
-            }
-
             const actionBtn = e.target.closest('.action-btn');
             if (actionBtn) {
                 const orderId = actionBtn.dataset.id;
                 const action = actionBtn.dataset.action;
                 const orderRef = doc(db, 'orders', orderId);
-
                 try {
                     if (action === 'confirm') await updateDoc(orderRef, { status: 'preparing' });
                     else if (action === 'finish') await updateDoc(orderRef, { status: 'ready' });
@@ -841,40 +405,6 @@
                 } catch (error) { console.error(error); showNotification('Gagal!', true); }
             }
         });
-
-        document.getElementById('cart-fab').addEventListener('click', () => {
-            renderCart();
-            document.getElementById('cart-modal').classList.add('show');
-        });
-
-        document.getElementById('checkout-btn').addEventListener('click', () => {
-            if (cart.length === 0) {
-                showNotification("Keranjang Anda kosong!", true);
-                return;
-            }
-            if(!document.getElementById('customer-name').value || !document.getElementById('table-number').value){
-                 showNotification("Nama dan Nomor Meja wajib diisi!", true);
-                return;
-            }
-            closeAllModals();
-            document.getElementById('payment-modal').classList.add('show');
-        });
-
-        document.getElementById('pay-cash-btn').addEventListener('click', () => placeOrder('Bayar di Kasir'));
-        
-        document.getElementById('pay-qris-btn').addEventListener('click', () => {
-            closeAllModals();
-            document.getElementById('qris-modal').classList.add('show');
-        });
-
-        document.getElementById('confirm-qris-payment-btn').addEventListener('click', () => placeOrder('QRIS'));
-
-        function closeAllModals() {
-            document.querySelectorAll('.modal-overlay').forEach(modal => modal.classList.remove('show'));
-        }
-        document.querySelectorAll('.modal-close').forEach(btn => btn.addEventListener('click', closeAllModals));
-        
-        // === FUNGSI-FUNGSI UI STANDAR ===
         
         function setupNavigation() {
             const navLinks = document.querySelectorAll('.nav-link');
@@ -891,36 +421,16 @@
             });
         }
 
-        function setupTabs() {
-            const tabButtons = document.querySelectorAll('.tab-button');
-            const tabContents = document.querySelectorAll('.tab-content');
-            tabButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const target = this.dataset.tab;
-                    tabButtons.forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    tabContents.forEach(c => c.classList.remove('active'));
-                    document.getElementById(target).classList.add('active');
-                });
-            });
-        }
-
         function showNotification(message, isError = false) {
             const el = document.createElement('div');
-            el.className = 'notification';
-            el.textContent = message;
+            el.className = 'notification'; el.textContent = message;
             if (isError) el.style.backgroundColor = '#A52A2A';
             document.body.appendChild(el);
             setTimeout(() => el.classList.add('show'), 10);
-            setTimeout(() => {
-                el.classList.remove('show');
-                setTimeout(() => el.remove(), 500);
-            }, 3000);
+            setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 500); }, 3000);
         }
         
         setupNavigation();
-        setupTabs();
     </script>
 </body>
 </html>
-
