@@ -11,188 +11,115 @@
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #8B4513 0%, #D2B48C 100%);
-            min-height: 100%;
+            min-height: 100vh;
         }
+        .hidden { display: none !important; }
 
-        html {
-            height: 100%;
-        }
-
-        /* Navigation */
-        .nav-bar {
-            background: rgba(62, 39, 35, 0.95);
-            padding: 15px 20px;
+        /* Login Page */
+        #login-page {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            backdrop-filter: blur(10px);
+            height: 100vh;
         }
-
-        .nav-brand {
-            color: #D2B48C;
-            font-size: 1.5rem;
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .login-container h1 {
+            color: #3E2723;
+            margin-bottom: 20px;
+        }
+        .login-container .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .login-container label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        .login-container input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+        .login-container button {
+            width: 100%;
+            padding: 15px;
+            border-radius: 8px;
+            border: none;
+            background: #8B4513;
+            color: white;
+            font-size: 1rem;
             font-weight: bold;
-            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.3s ease;
         }
-
-        .nav-links {
-            display: flex;
-            gap: 20px;
-            align-items: center;
+        .login-container button:hover {
+            background: #A0522D;
         }
-
-        .nav-link {
-            color: #D2B48C;
-            text-decoration: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            transition: all 0.3s ease;
+        #login-error {
+            color: #D32F2F;
+            margin-top: 15px;
             font-weight: 500;
         }
 
-        .nav-link:hover, .nav-link.active {
-            background: #8B4513;
-            color: white;
+        /* App Styles */
+        html { height: 100%; }
+        .nav-bar {
+            background: rgba(62, 39, 35, 0.95); padding: 15px 20px; display: flex;
+            justify-content: space-between; align-items: center; position: sticky;
+            top: 0; z-index: 1000; backdrop-filter: blur(10px);
         }
-
-        /* Main Container */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
+        .nav-brand { color: #D2B48C; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links { display: flex; gap: 20px; align-items: center; }
+        .nav-link, #logout-btn {
+            color: #D2B48C; text-decoration: none; padding: 8px 16px; border-radius: 6px;
+            transition: all 0.3s ease; font-weight: 500; cursor: pointer;
         }
-
+        .nav-link:hover, .nav-link.active, #logout-btn:hover { background: #8B4513; color: white; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
         .page {
-            display: none;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            overflow: hidden;
-            margin-bottom: 20px;
+            display: none; background: rgba(255, 255, 255, 0.95); border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); overflow: hidden; margin-bottom: 20px;
         }
-
-        .page.active {
-            display: block;
-        }
-
+        .page.active { display: block; }
         .page-header {
-            background: linear-gradient(135deg, #3E2723 0%, #5D4037 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
+            background: linear-gradient(135deg, #3E2723 0%, #5D4037 100%); color: white;
+            padding: 30px; text-align: center;
         }
-
-        .page-header h1 {
-            margin: 0 0 10px 0;
-            font-size: 2.5rem;
-            font-weight: bold;
-        }
-
-        .page-header p {
-            margin: 0;
-            opacity: 0.9;
-            font-size: 1.1rem;
-        }
-
-        /* Dashboard Styles */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            padding: 25px;
-        }
-
+        .page-header h1 { margin: 0 0 10px 0; font-size: 2.5rem; font-weight: bold; }
+        .page-header p { margin: 0; opacity: 0.9; font-size: 1.1rem; }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; padding: 25px; }
         .stat-card {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            text-align: center;
-            transition: transform 0.3s ease;
-            position: relative;
-            overflow: hidden;
+            background: white; border-radius: 15px; padding: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center; transition: transform 0.3s ease; position: relative; overflow: hidden;
         }
-
         .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
             background: linear-gradient(90deg, #8B4513, #D2B48C);
         }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .stat-icon {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            display: block;
-        }
-
-        .stat-value {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #3E2723;
-            margin-bottom: 8px;
-        }
-
-        .stat-label {
-            color: #666;
-            font-size: 1.1rem;
-            margin-bottom: 10px;
-        }
-
-        /* Order Management */
-        .order-list {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            margin: 0 25px 25px 25px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-
-        .order-item {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 15px;
-            border-left: 4px solid #8B4513;
-        }
-
-        .order-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-
-        .order-id {
-            font-weight: bold;
-            font-size: 1.1rem;
-            color: #3E2723;
-        }
-
-        .order-status {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: bold;
-        }
-
+        .stat-card:hover { transform: translateY(-5px); }
+        .stat-icon { font-size: 3rem; margin-bottom: 15px; display: block; }
+        .stat-value { font-size: 2.5rem; font-weight: bold; color: #3E2723; margin-bottom: 8px; }
+        .stat-label { color: #666; font-size: 1.1rem; margin-bottom: 10px; }
+        .order-list { background: white; border-radius: 15px; padding: 25px; margin: 0 25px 25px 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .order-item { background: #f8f9fa; border-radius: 10px; padding: 20px; margin-bottom: 15px; border-left: 4px solid #8B4513; }
+        .order-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; }
+        .order-id { font-weight: bold; font-size: 1.1rem; color: #3E2723; }
+        .order-status { padding: 6px 12px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; }
         .status-pending { background: #fff3cd; color: #856404; }
         .status-preparing { background: #cce5ff; color: #004085; }
         .status-ready { background: #d4edda; color: #155724; }
-
         .order-details { font-size: 0.95rem; color: #666; line-height: 1.5; }
-
         .action-btn {
             background: #8B4513; color: white; border: none; padding: 8px 16px;
             border-radius: 6px; cursor: pointer; font-size: 0.9rem; margin: 5px;
@@ -201,16 +128,14 @@
         .action-btn:hover { background: #A0522D; }
         .action-btn.success { background: #28a745; }
         .action-btn.success:hover { background: #218838; }
-
         .notification {
-            position: fixed; top: 20px; right: 20px; background: #8B4513;
-            color: white; padding: 15px 20px; border-radius: 8px; z-index: 2000;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2); font-weight: bold;
-            transform: translateX(calc(100% + 30px)); transition: transform 0.4s ease-in-out;
+            position: fixed; top: 20px; right: 20px; background: #8B4513; color: white;
+            padding: 15px 20px; border-radius: 8px; z-index: 2000; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            font-weight: bold; transform: translateX(calc(100% + 30px)); transition: transform 0.4s ease-in-out;
         }
         .notification.show { transform: translateX(0); }
-        
         @media (max-width: 768px) {
+            .login-container { padding: 25px; }
             .nav-bar { flex-direction: column; gap: 10px; }
             .nav-links { justify-content: center; flex-wrap: wrap; gap: 5px; }
             .container { padding: 10px; }
@@ -222,48 +147,71 @@
     </style>
 </head>
 <body>
-    <nav class="nav-bar">
-        <a href="#" class="nav-brand">☕ Portal Staf Payboss</a>
-        <div class="nav-links">
-            <a href="#" class="nav-link active" data-page="cashier">💰 Kasir</a>
-            <a href="#" class="nav-link" data-page="kitchen">👨‍🍳 Dapur</a>
-            <a href="#" class="nav-link" data-page="manager">📊 Manager</a>
-        </div>
-    </nav>
 
-    <div class="container">
-        <div id="cashier-page" class="page active">
-            <div class="page-header"><h1>💰 Sistem Kasir</h1><p>Kelola pesanan dan pembayaran pelanggan</p></div>
-            <div class="dashboard-grid">
-                <div class="stat-card"><span class="stat-icon">🛒</span><div class="stat-value" id="total-orders">0</div><div class="stat-label">Total Pesanan Aktif</div></div>
-                <div class="stat-card"><span class="stat-icon">💰</span><div class="stat-value" id="daily-revenue">Rp 0</div><div class="stat-label">Pendapatan Hari Ini</div></div>
-                <div class="stat-card"><span class="stat-icon">⏱️</span><div class="stat-value" id="pending-orders">0</div><div class="stat-label">Pesanan Menunggu</div></div>
-            </div>
-            <div class="order-list"><h3>📋 Daftar Pesanan</h3><div id="cashier-orders"></div></div>
+    <div id="login-page">
+        <div class="login-container">
+            <h1>☕ Portal Staf</h1>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit">Login</button>
+                <p id="login-error" class="hidden"></p>
+            </form>
         </div>
-        <div id="kitchen-page" class="page">
-            <div class="page-header"><h1>👨‍🍳 Dashboard Dapur</h1><p>Kelola pesanan yang perlu dimasak</p></div>
-            <div class="dashboard-grid">
-                <div class="stat-card"><span class="stat-icon">🔥</span><div class="stat-value" id="cooking-orders">0</div><div class="stat-label">Sedang Dimasak</div></div>
-                <div class="stat-card"><span class="stat-icon">✅</span><div class="stat-value" id="ready-orders">0</div><div class="stat-label">Siap Disajikan</div></div>
-                <div class="stat-card"><span class="stat-icon">🍽️</span><div class="stat-value" id="completed-orders-kitchen">0</div><div class="stat-label">Pesanan Selesai Hari Ini</div></div>
+    </div>
+
+    <div id="app-container" class="hidden">
+        <nav class="nav-bar">
+            <a href="#" class="nav-brand">☕ Portal Staf Payboss</a>
+            <div class="nav-links">
+                <a href="#" class="nav-link active" data-page="cashier">💰 Kasir</a>
+                <a href="#" class="nav-link" data-page="kitchen">👨‍🍳 Dapur</a>
+                <a href="#" class="nav-link" data-page="manager">📊 Manager</a>
+                <a href="#" id="logout-btn">Logout</a>
             </div>
-            <div class="order-list"><h3>🍳 Antrian Pesanan</h3><div id="kitchen-orders"></div></div>
-        </div>
-        <div id="manager-page" class="page">
-            <div class="page-header"><h1>📊 Dashboard Manager</h1><p>Analisis performa dan laporan bisnis</p></div>
-            <div class="dashboard-grid">
-                <div class="stat-card"><span class="stat-icon">💰</span><div class="stat-value" id="manager-total-sales">Rp 0</div><div class="stat-label">Total Penjualan Hari Ini</div></div>
-                <div class="stat-card"><span class="stat-icon">📦</span><div class="stat-value" id="manager-total-orders">0</div><div class="stat-label">Total Transaksi Selesai</div></div>
-                <div class="stat-card"><span class="stat-icon">📈</span><div class="stat-value" id="manager-avg-order">Rp 0</div><div class="stat-label">Rata-rata per Transaksi</div></div>
+        </nav>
+
+        <div class="container">
+            <div id="cashier-page" class="page active">
+                <div class="page-header"><h1>💰 Sistem Kasir</h1><p>Kelola pesanan dan pembayaran pelanggan</p></div>
+                <div class="dashboard-grid">
+                    <div class="stat-card"><span class="stat-icon">🛒</span><div class="stat-value" id="total-orders">0</div><div class="stat-label">Total Pesanan Aktif</div></div>
+                    <div class="stat-card"><span class="stat-icon">💰</span><div class="stat-value" id="daily-revenue">Rp 0</div><div class="stat-label">Pendapatan Hari Ini</div></div>
+                    <div class="stat-card"><span class="stat-icon">⏱️</span><div class="stat-value" id="pending-orders">0</div><div class="stat-label">Pesanan Menunggu</div></div>
+                </div>
+                <div class="order-list"><h3>📋 Daftar Pesanan</h3><div id="cashier-orders"></div></div>
             </div>
-            <div class="order-list"><h3>📊 Menu Terlaris Hari Ini</h3><div id="best-selling-list"><p>Belum ada data penjualan hari ini.</p></div></div>
+            <div id="kitchen-page" class="page">
+                <div class="page-header"><h1>👨‍🍳 Dashboard Dapur</h1><p>Kelola pesanan yang perlu dimasak</p></div>
+                <div class="dashboard-grid">
+                    <div class="stat-card"><span class="stat-icon">🔥</span><div class="stat-value" id="cooking-orders">0</div><div class="stat-label">Sedang Dimasak</div></div>
+                    <div class="stat-card"><span class="stat-icon">✅</span><div class="stat-value" id="ready-orders">0</div><div class="stat-label">Siap Disajikan</div></div>
+                    <div class="stat-card"><span class="stat-icon">🍽️</span><div class="stat-value" id="completed-orders-kitchen">0</div><div class="stat-label">Pesanan Selesai Hari Ini</div></div>
+                </div>
+                <div class="order-list"><h3>🍳 Antrian Pesanan</h3><div id="kitchen-orders"></div></div>
+            </div>
+            <div id="manager-page" class="page">
+                <div class="page-header"><h1>📊 Dashboard Manager</h1><p>Analisis performa dan laporan bisnis</p></div>
+                <div class="dashboard-grid">
+                    <div class="stat-card"><span class="stat-icon">💰</span><div class="stat-value" id="manager-total-sales">Rp 0</div><div class="stat-label">Total Penjualan Hari Ini</div></div>
+                    <div class="stat-card"><span class="stat-icon">📦</span><div class="stat-value" id="manager-total-orders">0</div><div class="stat-label">Total Transaksi Selesai</div></div>
+                    <div class="stat-card"><span class="stat-icon">📈</span><div class="stat-value" id="manager-avg-order">Rp 0</div><div class="stat-label">Rata-rata per Transaksi</div></div>
+                </div>
+                <div class="order-list"><h3>📊 Menu Terlaris Hari Ini</h3><div id="best-selling-list"><p>Belum ada data penjualan hari ini.</p></div></div>
+            </div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serverTimestamp, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
         const firebaseConfig = {
           apiKey: "AIzaSyB0nHqdAw_dV9pHcQ_cSnWtNsn4CwwwUNc",
@@ -277,31 +225,124 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const auth = getAuth(app);
         
-        let activeOrders = [];
-        let completedToday = [];
+        const loginPage = document.getElementById('login-page');
+        const appContainer = document.getElementById('app-container');
+        const loginForm = document.getElementById('login-form');
+        const loginError = document.getElementById('login-error');
+        const logoutBtn = document.getElementById('logout-btn');
 
-        onSnapshot(collection(db, 'orders'), (snapshot) => {
-            activeOrders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            renderStaffOrders();
-            updateAllDashboards();
+        let unsubscribeOrders = null;
+        let unsubscribeCompleted = null;
+        
+        // === GATEKEEPER: Cek status login ===
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // Pengguna sudah login -> Tampilkan aplikasi utama
+                loginPage.classList.add('hidden');
+                appContainer.classList.remove('hidden');
+
+                // Tentukan peran pengguna berdasarkan email
+                let userRole = 'staff'; // Peran default
+                if (user.email === 'fedrik.christian07@gmail.com') {
+                    userRole = 'manager';
+                }
+                
+                // Siapkan UI sesuai peran
+                setupUIForRole(userRole);
+                
+                initializeAppLogic();
+            } else {
+                // Pengguna belum login -> Tampilkan halaman login
+                loginPage.classList.remove('hidden');
+                appContainer.classList.add('hidden');
+                // Hentikan listener data jika ada
+                if (unsubscribeOrders) { unsubscribeOrders(); unsubscribeOrders = null; }
+                if (unsubscribeCompleted) { unsubscribeCompleted(); unsubscribeCompleted = null; }
+            }
         });
 
-        const todayStart = new Date();
-        todayStart.setHours(0, 0, 0, 0);
-        onSnapshot(query(collection(db, "completedOrders"), where("completedAt", ">=", todayStart)), (snapshot) => {
-            completedToday = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            updateAllDashboards();
+        // === Event Listener untuk Form Login ===
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = loginForm.email.value;
+            const password = loginForm.password.value;
+            loginError.classList.add('hidden');
+
+            signInWithEmailAndPassword(auth, email, password)
+                .catch((error) => {
+                    console.error("Login error:", error.code);
+                    let message = "Terjadi kesalahan. Silakan coba lagi.";
+                    if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+                        message = "Email atau password salah.";
+                    }
+                    loginError.textContent = message;
+                    loginError.classList.remove('hidden');
+                });
         });
 
-        function renderStaffOrders() {
+        // === Event Listener untuk Tombol Logout ===
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            signOut(auth);
+        });
+
+        // === Fungsi untuk mengatur UI berdasarkan peran pengguna ===
+        function setupUIForRole(role) {
+            const managerLink = document.querySelector('.nav-link[data-page="manager"]');
+            if (role === 'manager') {
+                managerLink.classList.remove('hidden');
+            } else { // 'staff'
+                managerLink.classList.add('hidden');
+
+                // Jika halaman yang aktif adalah manager, pindah ke kasir
+                if (document.getElementById('manager-page').classList.contains('active')) {
+                    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                    document.getElementById('cashier-page').classList.add('active');
+                    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                    document.querySelector('.nav-link[data-page="cashier"]').classList.add('active');
+                }
+            }
+        }
+
+
+        // === Fungsi untuk menjalankan semua logika aplikasi setelah login berhasil ===
+        function initializeAppLogic() {
+            let activeOrders = [];
+            let completedToday = [];
+
+            if (!unsubscribeOrders) {
+                unsubscribeOrders = onSnapshot(collection(db, 'orders'), (snapshot) => {
+                    activeOrders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    renderStaffOrders(activeOrders);
+                    updateAllDashboards(activeOrders, completedToday);
+                });
+            }
+
+            if (!unsubscribeCompleted) {
+                const todayStart = new Date();
+                todayStart.setHours(0, 0, 0, 0);
+                unsubscribeCompleted = onSnapshot(query(collection(db, "completedOrders"), where("completedAt", ">=", todayStart)), (snapshot) => {
+                    completedToday = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    updateAllDashboards(activeOrders, completedToday);
+                });
+            }
+            
+            setupNavigation();
+            setupOrderActionListeners(); 
+        }
+
+        // === Kumpulan Fungsi Render dan Aksi ===
+        
+        function renderStaffOrders(orders) {
             const cashierContainer = document.getElementById('cashier-orders');
             const kitchenContainer = document.getElementById('kitchen-orders');
             if(!cashierContainer || !kitchenContainer) return;
-            const kitchenQueue = activeOrders.filter(o => o.status === 'pending' || o.status === 'preparing');
+            const kitchenQueue = orders.filter(o => o.status === 'pending' || o.status === 'preparing');
             
-            cashierContainer.innerHTML = activeOrders.length > 0 ? '' : '<p>Belum ada pesanan aktif.</p>';
-            activeOrders.forEach(order => cashierContainer.appendChild(createOrderElement(order, 'cashier')));
+            cashierContainer.innerHTML = orders.length > 0 ? '' : '<p>Belum ada pesanan aktif.</p>';
+            orders.forEach(order => cashierContainer.appendChild(createOrderElement(order, 'cashier')));
             kitchenContainer.innerHTML = kitchenQueue.length > 0 ? '' : '<p>Tidak ada antrian di dapur.</p>';
             kitchenQueue.forEach(order => kitchenContainer.appendChild(createOrderElement(order, 'kitchen')));
         }
@@ -339,8 +380,8 @@
             return div;
         }
         
-        function updateAllDashboards() {
-            const totalSales = completedToday.reduce((sum, order) => sum + order.total, 0);
+        function updateAllDashboards(activeOrders, completedOrders) {
+            const totalSales = completedOrders.reduce((sum, order) => sum + order.total, 0);
             const updateElementText = (id, text) => {
                 const el = document.getElementById(id);
                 if (el) el.textContent = text;
@@ -351,23 +392,23 @@
             updateElementText('cooking-orders', activeOrders.filter(o => o.status === 'preparing').length);
             updateElementText('ready-orders', activeOrders.filter(o => o.status === 'ready').length);
             updateElementText('daily-revenue', `Rp ${totalSales.toLocaleString('id-ID')}`);
-            updateElementText('completed-orders-kitchen', completedToday.length);
+            updateElementText('completed-orders-kitchen', completedOrders.length);
             updateElementText('manager-total-sales', `Rp ${totalSales.toLocaleString('id-ID')}`);
-            updateElementText('manager-total-orders', completedToday.length);
-            const avgOrder = completedToday.length > 0 ? Math.round(totalSales / completedToday.length) : 0;
+            updateElementText('manager-total-orders', completedOrders.length);
+            const avgOrder = completedOrders.length > 0 ? Math.round(totalSales / completedOrders.length) : 0;
             updateElementText('manager-avg-order', `Rp ${avgOrder.toLocaleString('id-ID')}`);
-            updateBestSelling();
+            updateBestSelling(completedOrders);
         }
         
-        function updateBestSelling() {
+        function updateBestSelling(completedOrders) {
              const container = document.getElementById('best-selling-list');
              if(!container) return;
-            if (completedToday.length === 0) {
+            if (completedOrders.length === 0) {
                 container.innerHTML = '<p>Belum ada data penjualan hari ini.</p>';
                 return;
             }
             const sales = {};
-            completedToday.forEach(order => {
+            completedOrders.forEach(order => {
                 order.items.forEach(item => {
                     if (!sales[item.name]) sales[item.name] = { qty: 0, revenue: 0 };
                     sales[item.name].qty += item.qty;
@@ -384,9 +425,11 @@
             `).join('');
         }
         
-        document.body.addEventListener('click', async function(e) {
-            const actionBtn = e.target.closest('.action-btn');
-            if (actionBtn) {
+        function setupOrderActionListeners() {
+            document.body.addEventListener('click', async function(e) {
+                const actionBtn = e.target.closest('.action-btn');
+                if (!actionBtn || !actionBtn.dataset.action) return;
+
                 const orderId = actionBtn.dataset.id;
                 const action = actionBtn.dataset.action;
                 const orderRef = doc(db, 'orders', orderId);
@@ -394,17 +437,18 @@
                     if (action === 'confirm') await updateDoc(orderRef, { status: 'preparing' });
                     else if (action === 'finish') await updateDoc(orderRef, { status: 'ready' });
                     else if (action === 'complete') {
-                        const orderData = activeOrders.find(o => o.id === orderId);
-                        if (orderData) {
-                            const { id, ...archiveData } = orderData;
-                            await addDoc(collection(db, 'completedOrders'), { ...archiveData, completedAt: serverTimestamp() });
+                        // Ambil data order terbaru sebelum memindahkan
+                        const orderDoc = await getDoc(orderRef);
+                        if (orderDoc.exists()){
+                            const orderData = orderDoc.data();
+                            await addDoc(collection(db, 'completedOrders'), { ...orderData, completedAt: serverTimestamp() });
                             await deleteDoc(orderRef);
                             showNotification('Pesanan selesai.');
                         }
                     }
-                } catch (error) { console.error(error); showNotification('Gagal!', true); }
-            }
-        });
+                } catch (error) { console.error(error); showNotification('Gagal memproses aksi!', true); }
+            });
+        }
         
         function setupNavigation() {
             const navLinks = document.querySelectorAll('.nav-link');
@@ -430,7 +474,7 @@
             setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 500); }, 3000);
         }
         
-        setupNavigation();
     </script>
 </body>
 </html>
+
