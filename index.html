@@ -645,16 +645,16 @@
         // Fungsi dijalankan setelah halaman web selesai dimuat
         document.addEventListener('DOMContentLoaded', function() {
             
+            // Variabel untuk menyimpan data pesanan aktif saat ini
+            let currentActiveOrders = [];
+
             // === BAGIAN UTAMA: PENGELOLAAN DATA REAL-TIME ===
 
             // 1. Mengawasi dan Menampilkan Data Menu
             const menuCollection = collection(db, 'menu');
             onSnapshot(menuCollection, (snapshot) => {
-                // Kosongkan semua menu di layar
                 const menuGrids = document.querySelectorAll('.menu-grid');
                 menuGrids.forEach(grid => grid.innerHTML = '');
-
-                // Tampilkan setiap menu dari database
                 snapshot.docs.forEach(doc => {
                     const item = { id: doc.id, ...doc.data() };
                     const grid = document.getElementById(item.category + '-grid');
@@ -667,17 +667,15 @@
             // 2. Mengawasi dan Menampilkan Data Pesanan (Orders)
             const ordersCollection = collection(db, 'orders');
             onSnapshot(ordersCollection, (snapshot) => {
-                const activeOrders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                
-                // Perbarui semua tampilan yang berhubungan dengan pesanan
-                renderCashierOrders(activeOrders);
-                renderKitchenOrders(activeOrders);
-                updateDashboardStats(activeOrders);
+                currentActiveOrders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderCashierOrders(currentActiveOrders);
+                renderKitchenOrders(currentActiveOrders);
+                updateDashboardStats(currentActiveOrders);
             });
 
             // 3. Mengawasi data pesanan yang sudah selesai HARI INI
             const today = new Date();
-            today.setHours(0, 0, 0, 0); // Set ke awal hari
+            today.setHours(0, 0, 0, 0);
             const completedOrdersQuery = query(collection(db, "completedOrders"), where("completedAt", ">=", today));
             onSnapshot(completedOrdersQuery, (snapshot) => {
                 const completedToday = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -687,7 +685,6 @@
 
             // === BAGIAN FUNGSI-FUNGSI PEMBANTU ===
 
-            // Membuat kartu menu untuk ditampilkan
             function createMenuCard(item) {
                 const card = document.createElement('div');
                 card.className = 'menu-item';
@@ -699,30 +696,25 @@
                     <div class="item-price">Rp ${item.price.toLocaleString('id-ID')}</div>
                     <button class="order-btn">🛒 Pesan Sekarang</button>
                 `;
-                // Tambahkan event listener untuk tombol pesan
                 card.querySelector('.order-btn').addEventListener('click', (e) => {
                     orderItem(item, e.target);
                 });
                 return card;
             }
 
-            // Fungsi untuk membuat pesanan baru
             async function orderItem(item, button) {
                 const originalText = button.innerHTML;
                 button.innerHTML = '<span class="loading"></span> Memproses...';
                 button.disabled = true;
-
                 const newOrder = {
-                    customer: "Pelanggan", // Bisa dikembangkan nanti
-                    table: Math.floor(Math.random() * 20) + 1, // Nomor meja acak
+                    customer: "Pelanggan",
+                    table: Math.floor(Math.random() * 20) + 1,
                     items: [{ name: item.name, qty: 1, price: item.price }],
                     total: item.price,
-                    status: 'pending', // Status awal: menunggu konfirmasi
-                    createdAt: serverTimestamp() // Waktu pesanan dibuat
+                    status: 'pending',
+                    createdAt: serverTimestamp()
                 };
-
                 try {
-                    // Simpan pesanan ke database
                     await addDoc(ordersCollection, newOrder);
                     showNotification(`${item.name} berhasil ditambahkan ke pesanan!`);
                 } catch (error) {
@@ -734,14 +726,12 @@
                 }
             }
 
-            // Menampilkan daftar pesanan di halaman kasir
             function renderCashierOrders(orders) {
                 const container = document.getElementById('cashier-orders');
                 container.innerHTML = orders.length > 0 ? '' : '<p>Belum ada pesanan aktif.</p>';
                 orders.forEach(order => container.appendChild(createOrderElement(order, 'cashier')));
             }
 
-            // Menampilkan daftar pesanan di halaman dapur
             function renderKitchenOrders(orders) {
                 const container = document.getElementById('kitchen-orders');
                 const kitchenQueue = orders.filter(o => o.status === 'pending' || o.status === 'preparing');
@@ -749,7 +739,6 @@
                 kitchenQueue.forEach(order => container.appendChild(createOrderElement(order, 'kitchen')));
             }
             
-            // Membuat elemen HTML untuk satu pesanan
             function createOrderElement(order, type) {
                 const div = document.createElement('div');
                 div.className = 'order-item';
@@ -758,19 +747,16 @@
                     preparing: { text: 'Dimasak', class: 'status-preparing' },
                     ready: { text: 'Siap', class: 'status-ready' }
                 };
-                
                 let actionButtons = '';
                 if (type === 'cashier') {
                     if (order.status === 'pending') actionButtons = `<button class="action-btn" data-id="${order.id}" data-action="confirm">Konfirmasi</button>`;
                     else if (order.status === 'ready') actionButtons = `<button class="action-btn success" data-id="${order.id}" data-action="complete">Selesaikan & Bayar</button>`;
                 } else if (type === 'kitchen') {
-                    if (order.status === 'pending') actionButtons = `<button class="action-btn" disabled>Menunggu Konfirmasi</button>`; // Dapur tidak bisa mulai masak sebelum kasir konfirmasi
+                    if (order.status === 'pending') actionButtons = `<button class="action-btn" disabled>Menunggu Konfirmasi</button>`;
                     else if (order.status === 'preparing') actionButtons = `<button class="action-btn success" data-id="${order.id}" data-action="finish">Selesai Masak</button>`;
                 }
-                
                 const itemsList = order.items.map(item => `${item.name} x${item.qty}`).join(', ');
                 const orderTime = order.createdAt ? new Date(order.createdAt.seconds * 1000).toLocaleTimeString('id-ID') : '...';
-
                 div.innerHTML = `
                     <div class="order-header">
                         <span class="order-id">Meja ${order.table}</span>
@@ -785,13 +771,9 @@
                 return div;
             }
 
-            // Memperbarui statistik di semua dashboard
             function updateDashboardStats(activeOrders) {
-                // Kasir
                 document.getElementById('total-orders').textContent = activeOrders.length;
                 document.getElementById('pending-orders').textContent = activeOrders.filter(o => o.status === 'pending').length;
-
-                // Dapur
                 document.getElementById('cooking-orders').textContent = activeOrders.filter(o => o.status === 'preparing').length;
                 document.getElementById('ready-orders').textContent = activeOrders.filter(o => o.status === 'ready').length;
             }
@@ -800,16 +782,11 @@
                 const totalSales = completedOrders.reduce((sum, order) => sum + order.total, 0);
                 const totalOrdersCount = completedOrders.length;
                 const avgOrderValue = totalOrdersCount > 0 ? totalSales / totalOrdersCount : 0;
-
-                // Update UI Manager
                 document.getElementById('manager-total-sales').textContent = `Rp ${totalSales.toLocaleString('id-ID')}`;
                 document.getElementById('manager-total-orders').textContent = totalOrdersCount;
                 document.getElementById('manager-avg-order').textContent = `Rp ${Math.round(avgOrderValue).toLocaleString('id-ID')}`;
-                
-                // Update UI Kasir & Dapur
                 document.getElementById('daily-revenue').textContent = `Rp ${totalSales.toLocaleString('id-ID')}`;
                 document.getElementById('completed-orders-kitchen').textContent = totalOrdersCount;
-
                 updateBestSelling(completedOrders);
             }
             
@@ -819,7 +796,6 @@
                     container.innerHTML = '<p>Belum ada data penjualan hari ini.</p>';
                     return;
                 }
-                
                 const sales = {};
                 completedOrders.forEach(order => {
                     order.items.forEach(item => {
@@ -830,9 +806,7 @@
                         sales[item.name].revenue += item.price * item.qty;
                     });
                 });
-
                 const sortedSales = Object.entries(sales).sort(([,a], [,b]) => b.qty - a.qty).slice(0, 3);
-                
                 const medals = ['🥇', '🥈', '🥉'];
                 container.innerHTML = sortedSales.map(([name, data], index) => `
                     <div class="order-item">
@@ -848,7 +822,6 @@
 
             // === BAGIAN AKSI PENGGUNA (EVENT LISTENERS) ===
 
-            // Event listener untuk semua tombol aksi di daftar pesanan
             document.body.addEventListener('click', async function(e) {
                 const target = e.target.closest('[data-action]');
                 if (!target) return;
@@ -859,27 +832,27 @@
 
                 try {
                     switch(action) {
-                        case 'confirm': // Kasir konfirmasi, status jadi 'preparing'
+                        case 'confirm':
                             await updateDoc(orderRef, { status: 'preparing' });
                             showNotification(`Pesanan dikonfirmasi ke dapur.`);
                             break;
-                        case 'finish': // Dapur selesai masak, status jadi 'ready'
+                        case 'finish':
                             await updateDoc(orderRef, { status: 'ready' });
                             showNotification(`Pesanan siap disajikan.`);
                             break;
-                        case 'complete': // Kasir selesaikan pesanan
-                            const orderToComplete = (await getDocs(query(ordersCollection, where("__name__", "==", orderId)))).docs[0].data();
-                            
-                            // 1. Pindahkan ke koleksi 'completedOrders'
-                            await addDoc(collection(db, 'completedOrders'), {
-                                ...orderToComplete,
-                                completedAt: serverTimestamp()
-                            });
-
-                            // 2. Hapus dari koleksi 'orders'
-                            await deleteDoc(orderRef);
-
-                            showNotification(`Pesanan selesai dan dibayar.`);
+                        case 'complete':
+                            const orderToCompleteData = currentActiveOrders.find(o => o.id === orderId);
+                            if (orderToCompleteData) {
+                                const { id, ...dataToArchive } = orderToCompleteData;
+                                await addDoc(collection(db, 'completedOrders'), {
+                                    ...dataToArchive,
+                                    completedAt: serverTimestamp()
+                                });
+                                await deleteDoc(orderRef);
+                                showNotification(`Pesanan selesai dan dibayar.`);
+                            } else {
+                                showNotification("Error: Pesanan tidak ditemukan untuk diselesaikan!", true);
+                            }
                             break;
                     }
                 } catch(error) {
@@ -891,7 +864,6 @@
 
             // === FUNGSI-FUNGSI UI STANDAR ===
 
-            // Setup untuk navigasi halaman
             function setupNavigation() {
                 const navLinks = document.querySelectorAll('.nav-link');
                 const pages = document.querySelectorAll('.page');
@@ -907,7 +879,6 @@
                 });
             }
 
-            // Setup untuk tab menu
             function setupTabs() {
                 const tabButtons = document.querySelectorAll('.tab-button');
                 const tabContents = document.querySelectorAll('.tab-content');
@@ -922,7 +893,6 @@
                 });
             }
 
-            // Fungsi untuk menampilkan notifikasi
             function showNotification(message, isError = false) {
                 const notification = document.createElement('div');
                 notification.className = 'notification';
