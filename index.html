@@ -2,51 +2,547 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Firebase Menu Importer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payboss Cafe - Sistem Terintegrasi</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f4f9; color: #333; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .container { text-align: center; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); max-width: 90%; }
-        h1 { color: #3E2723; }
-        p { color: #666; max-width: 500px; margin: 15px auto; }
-        button { background: #8B4513; color: white; border: none; padding: 15px 30px; font-size: 1rem; border-radius: 8px; cursor: pointer; transition: background 0.3s ease; }
-        button:hover { background: #A0522D; }
-        button:disabled { background: #ccc; cursor: not-allowed; }
-        #log { margin-top: 20px; font-family: monospace; font-size: 0.9rem; color: #4CAF50; text-align: left; background: #f1f1f1; padding: 10px; border-radius: 5px; max-height: 150px; overflow-y: auto;}
-        .instructions { border: 1px solid #ddd; padding: 15px; margin-bottom: 20px; border-radius: 8px; background-color: #fafafa; text-align: left;}
-        code { background: #eee; padding: 2px 5px; border-radius: 3px; font-family: monospace; }
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #8B4513 0%, #D2B48C 100%);
+            min-height: 100%;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        /* Navigation */
+        .nav-bar {
+            background: rgba(62, 39, 35, 0.95);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-brand {
+            color: #D2B48C;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: #D2B48C;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: #8B4513;
+            color: white;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .page {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #3E2723 0%, #5D4037 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .page-header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+
+        .page-header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        /* Menu Page Styles */
+        .tabs {
+            display: flex;
+            background: #3E2723;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .tab-button {
+            flex: none;
+            padding: 18px 20px;
+            background: none;
+            border: none;
+            color: #D2B48C;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            min-width: 140px;
+            text-align: center;
+        }
+
+        .tab-button:hover {
+            background: rgba(210, 180, 140, 0.1);
+            color: #FFFFFF;
+        }
+
+        .tab-button.active {
+            background: #8B4513;
+            color: #FFFFFF;
+            box-shadow: inset 0 -3px 0 #D2B48C;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 25px;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .category-title {
+            font-size: 2rem;
+            color: #3E2723;
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .menu-item {
+            background: #FFFFFF;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border-left: 5px solid #8B4513;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #8B4513, #D2B48C);
+        }
+
+        .menu-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border-left-color: #D2B48C;
+        }
+
+        .item-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #3E2723;
+            margin-bottom: 8px;
+        }
+
+        .item-description {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .item-variants {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .item-price {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #8B4513;
+            margin-bottom: 15px;
+        }
+
+        .order-btn {
+            background: linear-gradient(135deg, #8B4513 0%, #A0522D 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .order-btn:hover {
+            background: linear-gradient(135deg, #A0522D 0%, #8B4513 100%);
+            transform: translateY(-2px);
+        }
+
+        /* Dashboard Styles */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #8B4513, #D2B48C);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #3E2723;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .stat-change {
+            font-size: 0.9rem;
+            font-weight: bold;
+            padding: 4px 12px;
+            border-radius: 20px;
+            background: #d4edda;
+            color: #155724;
+        }
+
+        /* Order Management */
+        .order-list {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 0 25px 25px 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .order-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #8B4513;
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .order-id {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #3E2723;
+        }
+
+        .order-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-preparing {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .status-ready {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .order-details {
+            font-size: 0.95rem;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .action-btn {
+            background: #8B4513;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: #A0522D;
+        }
+
+        .action-btn.success {
+            background: #28a745;
+        }
+
+        .action-btn.success:hover {
+            background: #218838;
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #8B4513;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            z-index: 2000;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            font-weight: bold;
+            transform: translateX(calc(100% + 30px));
+            transition: transform 0.4s ease-in-out;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-bar {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .nav-links {
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+
+            .nav-link {
+                font-size: 0.9rem;
+                padding: 6px 12px;
+            }
+
+            .container {
+                padding: 10px;
+            }
+            .dashboard-grid, .order-list {
+                padding: 15px;
+                margin: 0 10px 15px 10px;
+            }
+
+            .page-header h1 {
+                font-size: 2rem;
+            }
+
+            .tab-button {
+                min-width: 120px;
+                padding: 15px 10px;
+            }
+
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .order-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
+    <!-- Navigation -->
+    <nav class="nav-bar">
+        <a href="#" class="nav-brand">☕ Payboss Cafe</a>
+        <div class="nav-links">
+            <a href="#" class="nav-link active" data-page="menu">📋 Menu</a>
+            <a href="#" class="nav-link" data-page="cashier">💰 Kasir</a>
+            <a href="#" class="nav-link" data-page="kitchen">👨‍🍳 Dapur</a>
+            <a href="#" class="nav-link" data-page="manager">📊 Manager</a>
+        </div>
+    </nav>
 
     <div class="container">
-        <h1>🚀 Importer Menu Payboss Cafe</h1>
-        
-        <div class="instructions">
-            <strong>PENTING: Lakukan ini terlebih dahulu!</strong>
-            <ol>
-                <li>Buka Konsol Firebase > Firestore Database > Tab <strong>Rules</strong>.</li>
-                <li>Ganti semua isinya dengan kode di bawah ini untuk mengizinkan proses import:</li>
-            </ol>
-            <pre><code>rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if true;
-    }
-  }
-}</code></pre>
-            <p>Setelah selesai import, aturan ini bisa dibuat lebih aman.</p>
+        <!-- Menu Page -->
+        <div id="menu-page" class="page active">
+            <div class="page-header">
+                <h1>📋 Menu Payboss Cafe</h1>
+                <p>Pilih kategori untuk melihat menu yang tersedia</p>
+            </div>
+
+            <div class="tabs">
+                <button class="tab-button active" data-tab="snacks">🍟 Makanan Ringan</button>
+                <button class="tab-button" data-tab="pastry">🥐 Roti & Manis</button>
+                <button class="tab-button" data-tab="main">🍛 Makanan Berat</button>
+                <button class="tab-button" data-tab="coffee">☕ Kopi</button>
+                <button class="tab-button" data-tab="non-coffee">🥤 Non-Kopi</button>
+            </div>
+
+            <!-- Grid untuk setiap kategori menu -->
+            <div id="snacks" class="tab-content active"><h2 class="category-title">🍟 Makanan Ringan</h2><div class="menu-grid" id="snacks-grid"></div></div>
+            <div id="pastry" class="tab-content"><h2 class="category-title">🥐 Roti & Manis</h2><div class="menu-grid" id="pastry-grid"></div></div>
+            <div id="main" class="tab-content"><h2 class="category-title">🍛 Makanan Berat</h2><div class="menu-grid" id="main-grid"></div></div>
+            <div id="coffee" class="tab-content"><h2 class="category-title">☕ Kopi</h2><div class="menu-grid" id="coffee-grid"></div></div>
+            <div id="non-coffee" class="tab-content"><h2 class="category-title">🥤 Non-Kopi</h2><div class="menu-grid" id="non-coffee-grid"></div></div>
         </div>
 
-        <p>Pastikan Anda sudah menghapus collection 'menu' yang lama untuk menghindari data ganda. Klik tombol di bawah untuk memulai proses import otomatis.</p>
-        <button id="importButton">Import Semua Menu ke Firebase</button>
-        <div id="log"></div>
+        <!-- Cashier Page -->
+        <div id="cashier-page" class="page">
+            <div class="page-header"><h1>💰 Sistem Kasir</h1><p>Kelola pesanan dan pembayaran pelanggan</p></div>
+            <div class="dashboard-grid">
+                <div class="stat-card"><span class="stat-icon">🛒</span><div class="stat-value" id="total-orders">0</div><div class="stat-label">Total Pesanan Aktif</div></div>
+                <div class="stat-card"><span class="stat-icon">💰</span><div class="stat-value" id="daily-revenue">Rp 0</div><div class="stat-label">Pendapatan Hari Ini</div></div>
+                <div class="stat-card"><span class="stat-icon">⏱️</span><div class="stat-value" id="pending-orders">0</div><div class="stat-label">Pesanan Menunggu</div></div>
+            </div>
+            <div class="order-list"><h3>📋 Daftar Pesanan</h3><div id="cashier-orders"></div></div>
+        </div>
+
+        <!-- Kitchen Page -->
+        <div id="kitchen-page" class="page">
+            <div class="page-header"><h1>👨‍🍳 Dashboard Dapur</h1><p>Kelola pesanan yang perlu dimasak</p></div>
+            <div class="dashboard-grid">
+                <div class="stat-card"><span class="stat-icon">🔥</span><div class="stat-value" id="cooking-orders">0</div><div class="stat-label">Sedang Dimasak</div></div>
+                <div class="stat-card"><span class="stat-icon">✅</span><div class="stat-value" id="ready-orders">0</div><div class="stat-label">Siap Disajikan</div></div>
+                <div class="stat-card"><span class="stat-icon">🍽️</span><div class="stat-value" id="completed-orders-kitchen">0</div><div class="stat-label">Pesanan Selesai Hari Ini</div></div>
+            </div>
+            <div class="order-list"><h3>🍳 Antrian Pesanan</h3><div id="kitchen-orders"></div></div>
+        </div>
+
+        <!-- Manager Page -->
+        <div id="manager-page" class="page">
+             <div class="page-header"><h1>📊 Dashboard Manager</h1><p>Analisis performa dan laporan bisnis</p></div>
+             <div class="dashboard-grid">
+                <div class="stat-card"><span class="stat-icon">💰</span><div class="stat-value" id="manager-total-sales">Rp 0</div><div class="stat-label">Total Penjualan Hari Ini</div></div>
+                <div class="stat-card"><span class="stat-icon">📦</span><div class="stat-value" id="manager-total-orders">0</div><div class="stat-label">Total Transaksi Selesai</div></div>
+                <div class="stat-card"><span class="stat-icon">📈</span><div class="stat-value" id="manager-avg-order">Rp 0</div><div class="stat-label">Rata-rata per Transaksi</div></div>
+            </div>
+            <div class="order-list"><h3>📊 Menu Terlaris Hari Ini</h3><div id="best-selling-list"><p>Belum ada data penjualan hari ini.</p></div></div>
+        </div>
     </div>
 
+    <!-- Firebase SDK -->
     <script type="module">
+        // Import fungsi dari Firebase SDK
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, collection, doc, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serverTimestamp, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+        // Konfigurasi Firebase Anda
         const firebaseConfig = {
           apiKey: "AIzaSyB0nHqdAw_dV9pHcQ_cSnWtNsn4CwwwUNc",
           authDomain: "payboss-cafe-system.firebaseapp.com",
@@ -57,93 +553,273 @@ service cloud.firestore {
           measurementId: "G-H1NJ369HE9"
         };
 
+        // Inisialisasi Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        
+        // Variabel global untuk menyimpan data
+        let activeOrders = [];
+        let completedToday = [];
 
-        // --- SEMUA DATA MENU ANDA ADA DI SINI ---
-        const menuToImport = [
-             // A. Makanan Ringan / Snack
-            { name: "Mix Vegetable PayBoss", description: "Pisang goreng, singkong, bakwan, tempe mendoan, jagung", price: 25000, category: "snacks" },
-            { name: "Mix Platter", description: "Kentang goreng, nugget, sosis, otak-otak, kulit ayam", price: 30000, category: "snacks" },
-            { name: "Kentang Goreng", description: "", price: 15000, category: "snacks" },
-            { name: "Cireng Isi", description: "Pilihan isi: ayam suwir / pentol pedas / keju", price: 18000, category: "snacks", variants: "Ayam Suwir, Pentol Pedas, Keju" },
-            { name: "Cireng Bumbu Rujak", description: "", price: 16000, category: "snacks" },
-            { name: "Singkong Rekah", description: "", price: 12000, category: "snacks" },
-            { name: "Pisang Kipas", description: "", price: 15000, category: "snacks" },
-            { name: "Tempe Mendoan", description: "", price: 12000, category: "snacks" },
-            { name: "Tahu Cabe Garam", description: "", price: 16000, category: "snacks" },
-            { name: "Tahu Bakso", description: "", price: 16000, category: "snacks" },
-            { name: "Kulit Ayam Crispy", description: "", price: 18000, category: "snacks" },
-            { name: "Jamur Crispy", description: "", price: 16000, category: "snacks" },
-            { name: "Sotong Goreng", description: "Camilan cumi", price: 20000, category: "snacks" },
-            { name: "Risol Mayo", description: "", price: 14000, category: "snacks" },
-            { name: "Dimsum Keju Lumer", description: "", price: 22000, category: "snacks" },
-            { name: "Mini Wonton Crispy", description: "", price: 18000, category: "snacks" },
-            { name: "Dimsum", description: "Pilihan: seafood / ayam / sapi", price: 20000, category: "snacks", variants: "Seafood, Ayam, Sapi" },
-            { name: "Pepperoni Pizza Spring Roll", description: "", price: 22000, category: "snacks" },
-            { name: "Corn Ribs", description: "Pilihan: Spicy / Original", price: 18000, category: "snacks", variants: "Spicy, Original" },
-            { name: "Pempek", description: "", price: 18000, category: "snacks" },
+        // === FUNGSI UTAMA REAL-TIME ===
+        
+        // 1. Mengawasi koleksi 'menu'
+        onSnapshot(collection(db, 'menu'), (snapshot) => {
+            document.querySelectorAll('.menu-grid').forEach(grid => grid.innerHTML = '');
+            snapshot.docs.forEach(doc => {
+                const item = { id: doc.id, ...doc.data() };
+                const grid = document.getElementById(`${item.category}-grid`);
+                if (grid) {
+                    grid.appendChild(createMenuCard(item));
+                }
+            });
+        });
+
+        // 2. Mengawasi koleksi 'orders' (pesanan aktif)
+        onSnapshot(collection(db, 'orders'), (snapshot) => {
+            activeOrders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            renderAllOrders();
+            updateAllDashboards();
+        });
+
+        // 3. Mengawasi koleksi 'completedOrders' untuk hari ini
+        const todayStart = new Date();
+        todayStart.setHours(0, 0, 0, 0);
+        const completedQuery = query(collection(db, "completedOrders"), where("completedAt", ">=", todayStart));
+        onSnapshot(completedQuery, (snapshot) => {
+            completedToday = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            updateAllDashboards();
+        });
+
+        // === FUNGSI PEMBUAT TAMPILAN (RENDER) ===
+
+        function createMenuCard(item) {
+            const card = document.createElement('div');
+            card.className = 'menu-item';
+            const variantsHtml = item.variants ? `<div class="item-variants"><strong>Varian:</strong> ${item.variants}</div>` : '';
+            card.innerHTML = `
+                <div class="item-name">${item.name}</div>
+                <div class="item-description">${item.description}</div>
+                ${variantsHtml}
+                <div class="item-price">Rp ${item.price.toLocaleString('id-ID')}</div>
+                <button class="order-btn" data-id="${item.id}">🛒 Pesan Sekarang</button>
+            `;
+            return card;
+        }
+        
+        function renderAllOrders() {
+            const cashierContainer = document.getElementById('cashier-orders');
+            const kitchenContainer = document.getElementById('kitchen-orders');
+            const kitchenQueue = activeOrders.filter(o => o.status === 'pending' || o.status === 'preparing');
             
-            // Roti & Pastry Manis
-            { name: "Donat", description: "Original + topping", price: 8000, category: "pastry", variants: "Cokelat, Keju, Gula" },
-            { name: "Toast", description: "", price: 15000, category: "pastry", variants: "Matcha, French Toast, Cokelat, Kacang" },
-            { name: "Croissant", description: "", price: 18000, category: "pastry", variants: "Butter, Almond, Cokelat, Vanilla" },
-            { name: "Roti Goreng", description: "", price: 10000, category: "pastry" },
-            { name: "Bakpao", description: "Pilihan: seafood / ayam / sapi", price: 12000, category: "pastry", variants: "Seafood, Ayam, Sapi" },
-            { name: "Kacang Bergula", description: "Peanuts caramelized", price: 10000, category: "pastry" },
+            cashierContainer.innerHTML = activeOrders.length > 0 ? '' : '<p>Belum ada pesanan aktif.</p>';
+            activeOrders.forEach(order => cashierContainer.appendChild(createOrderElement(order, 'cashier')));
 
-            // B. Makanan Berat
-            { name: "Nasi Goreng", description: "", price: 25000, category: "main", variants: "Bumbu Rendang, Bumbu Rawon, Bumbu Soto" },
-            { name: "Mie Goreng", description: "", price: 25000, category: "main", variants: "Seafood, Ayam, Sapi" },
-            { name: "Mie Godog", description: "", price: 25000, category: "main", variants: "Seafood, Ayam, Sapi" },
-            { name: "Mie Ayam", description: "", price: 20000, category: "main", variants: "Original, Bakso, Jamur" },
-            { name: "Sup", description: "", price: 22000, category: "main", variants: "Seafood, Ayam, Sapi" },
+            kitchenContainer.innerHTML = kitchenQueue.length > 0 ? '' : '<p>Tidak ada antrian di dapur.</p>';
+            kitchenQueue.forEach(order => kitchenContainer.appendChild(createOrderElement(order, 'kitchen')));
+        }
+        
+        function createOrderElement(order, type) {
+            const div = document.createElement('div');
+            div.className = 'order-item';
+            const statusMap = {
+                pending: { text: 'Menunggu', class: 'status-pending' },
+                preparing: { text: 'Dimasak', class: 'status-preparing' },
+                ready: { text: 'Siap', class: 'status-ready' }
+            };
+            let buttons = '';
+            if (type === 'cashier') {
+                if (order.status === 'pending') buttons = `<button class="action-btn" data-id="${order.id}" data-action="confirm">Konfirmasi</button>`;
+                if (order.status === 'ready') buttons = `<button class="action-btn success" data-id="${order.id}" data-action="complete">Selesaikan</button>`;
+            } else if (type === 'kitchen') {
+                if (order.status === 'pending') buttons = `<button class="action-btn" disabled>Tunggu Konfirmasi</button>`;
+                if (order.status === 'preparing') buttons = `<button class="action-btn success" data-id="${order.id}" data-action="finish">Selesai Masak</button>`;
+            }
+            const items = order.items.map(i => `${i.name} x${i.qty}`).join(', ');
+            const time = order.createdAt?.seconds ? new Date(order.createdAt.seconds * 1000).toLocaleTimeString('id-ID') : '...';
 
-            // C. Minuman – Coffee
-            { name: "Americano", description: "", price: 15000, category: "coffee", variants: "Original, Orange, Peach, Honey, Berry" },
-            { name: "Kopi Susu (Kopsus)", description: "", price: 18000, category: "coffee", variants: "Aren, Vanilla, Mocca, Macchiato, Latte, Cappuccino" },
+            div.innerHTML = `
+                <div class="order-header">
+                    <span class="order-id">Meja ${order.table}</span>
+                    <span class="order-status ${statusMap[order.status].class}">${statusMap[order.status].text}</span>
+                </div>
+                <div class="order-details">
+                    <strong>Pesanan:</strong> ${items}<br>
+                    <strong>Total:</strong> Rp ${order.total.toLocaleString('id-ID')} | <strong>Waktu:</strong> ${time}
+                </div>
+                <div style="margin-top: 10px;">${buttons}</div>
+            `;
+            return div;
+        }
 
-            // D. Minuman – Non-Coffee
-            { name: "Yakult Berry", description: "", price: 15000, category: "non-coffee" },
-            { name: "Cincau", description: "", price: 10000, category: "non-coffee" },
-            { name: "Sarang Burung Walet", description: "", price: 25000, category: "non-coffee" },
-            { name: "Teh", description: "", price: 8000, category: "non-coffee", variants: "Original, Lemon, Apple, Susu" },
-            { name: "Sup Buah", description: "", price: 18000, category: "non-coffee" },
-            { name: "Air Kelapa", description: "", price: 12000, category: "non-coffee", variants: "Original, Susu, Kopi" }
-        ];
+        // === FUNGSI PEMBARUAN DATA STATISTIK ===
 
-        const importButton = document.getElementById('importButton');
-        const logDiv = document.getElementById('log');
+        function updateAllDashboards() {
+            const totalSales = completedToday.reduce((sum, order) => sum + order.total, 0);
+            
+            // Statistik Kasir & Dapur
+            document.getElementById('total-orders').textContent = activeOrders.length;
+            document.getElementById('pending-orders').textContent = activeOrders.filter(o => o.status === 'pending').length;
+            document.getElementById('cooking-orders').textContent = activeOrders.filter(o => o.status === 'preparing').length;
+            document.getElementById('ready-orders').textContent = activeOrders.filter(o => o.status === 'ready').length;
+            document.getElementById('daily-revenue').textContent = `Rp ${totalSales.toLocaleString('id-ID')}`;
+            document.getElementById('completed-orders-kitchen').textContent = completedToday.length;
 
-        importButton.addEventListener('click', async () => {
-            importButton.disabled = true;
-            importButton.textContent = 'Mengimport...';
-            logDiv.innerHTML = '';
-
-            try {
-                const batch = writeBatch(db);
-                const menuRef = collection(db, "menu");
-
-                menuToImport.forEach((item) => {
-                    const docRef = doc(menuRef); // Membuat referensi dokumen baru
-                    batch.set(docRef, item);
-                    logDiv.innerHTML += `Menyiapkan ${item.name}...<br>`;
+            // Statistik Manager
+            document.getElementById('manager-total-sales').textContent = `Rp ${totalSales.toLocaleString('id-ID')}`;
+            document.getElementById('manager-total-orders').textContent = completedToday.length;
+            const avgOrder = completedToday.length > 0 ? Math.round(totalSales / completedToday.length) : 0;
+            document.getElementById('manager-avg-order').textContent = `Rp ${avgOrder.toLocaleString('id-ID')}`;
+            updateBestSelling();
+        }
+        
+        function updateBestSelling() {
+            const container = document.getElementById('best-selling-list');
+            if (completedToday.length === 0) {
+                container.innerHTML = '<p>Belum ada data penjualan hari ini.</p>';
+                return;
+            }
+            const sales = {};
+            completedToday.forEach(order => {
+                order.items.forEach(item => {
+                    if (!sales[item.name]) sales[item.name] = { qty: 0, revenue: 0 };
+                    sales[item.name].qty += item.qty;
+                    sales[item.name].revenue += item.price * item.qty;
                 });
-                
-                await batch.commit(); // Mengirim semua data sekaligus
+            });
+            const sorted = Object.entries(sales).sort(([,a],[,b]) => b.qty - a.qty).slice(0, 3);
+            const medals = ['🥇', '🥈', '🥉'];
+            container.innerHTML = sorted.map(([name, data], i) => `
+                <div class="order-item">
+                    <div class="order-header">
+                        <span class="order-id">${medals[i]} ${name}</span>
+                        <span class="order-status status-ready">${data.qty} porsi</span>
+                    </div>
+                    <div class="order-details">Pendapatan: Rp ${data.revenue.toLocaleString('id-ID')}</div>
+                </div>
+            `).join('');
+        }
 
-                logDiv.innerHTML += '<br><strong>BERHASIL!</strong> Semua menu telah ditambahkan ke Firebase.';
-                importButton.textContent = 'Import Selesai';
+        // === FUNGSI AKSI PENGGUNA (EVENT LISTENERS) ===
 
-            } catch (error) {
-                console.error("Error during import: ", error);
-                logDiv.innerHTML = `<strong>GAGAL!</strong> Terjadi kesalahan. Cek console (F12) untuk detail.`;
-                importButton.textContent = 'Coba Lagi';
-                importButton.disabled = false;
+        document.body.addEventListener('click', async function(e) {
+            const orderBtn = e.target.closest('.order-btn');
+            const actionBtn = e.target.closest('.action-btn');
+
+            if (orderBtn) {
+                const button = orderBtn;
+                const originalText = button.innerHTML;
+                button.innerHTML = '<span class="loading"></span>';
+                button.disabled = true;
+
+                const menuId = button.dataset.id;
+                try {
+                    // Ambil data menu langsung dari Firebase untuk memastikan harga terbaru
+                    const menuRef = doc(db, 'menu', menuId);
+                    const menuDoc = await (await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js")).getDoc(menuRef);
+
+                    if (!menuDoc.exists()) {
+                        throw new Error("Menu item not found!");
+                    }
+                    const item = menuDoc.data();
+
+                    const newOrder = {
+                        customer: "Pelanggan",
+                        table: Math.floor(Math.random() * 20) + 1,
+                        items: [{ name: item.name, qty: 1, price: item.price }],
+                        total: item.price,
+                        status: 'pending',
+                        createdAt: serverTimestamp()
+                    };
+                    await addDoc(collection(db, 'orders'), newOrder);
+                    showNotification(`${item.name} berhasil dipesan!`);
+                } catch (error) {
+                    showNotification(`Gagal memesan: ${error.message}`, true);
+                    console.error(error);
+                } finally {
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                }
+            }
+
+            if (actionBtn) {
+                const orderId = actionBtn.dataset.id;
+                const action = actionBtn.dataset.action;
+                const orderRef = doc(db, 'orders', orderId);
+
+                try {
+                    if (action === 'confirm') {
+                        await updateDoc(orderRef, { status: 'preparing' });
+                        showNotification('Pesanan dikonfirmasi ke dapur.');
+                    } else if (action === 'finish') {
+                        await updateDoc(orderRef, { status: 'ready' });
+                        showNotification('Pesanan siap disajikan.');
+                    } else if (action === 'complete') {
+                        const orderData = activeOrders.find(o => o.id === orderId);
+                        if (orderData) {
+                            const { id, ...archiveData } = orderData;
+                            await addDoc(collection(db, 'completedOrders'), { ...archiveData, completedAt: serverTimestamp() });
+                            await deleteDoc(orderRef);
+                            showNotification('Pesanan selesai.');
+                        } else {
+                             throw new Error("Order data not found in local state.");
+                        }
+                    }
+                } catch (error) {
+                    showNotification(`Gagal: ${error.message}`, true);
+                    console.error(error);
+                }
             }
         });
-    </script>
 
+        // === FUNGSI-FUNGSI UI STANDAR ===
+        
+        function setupNavigation() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const pages = document.querySelectorAll('.page');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = this.dataset.page;
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                    pages.forEach(p => p.classList.remove('active'));
+                    document.getElementById(`${target}-page`).classList.add('active');
+                });
+            });
+        }
+
+        function setupTabs() {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const target = this.dataset.tab;
+                    tabButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    document.getElementById(target).classList.add('active');
+                });
+            });
+        }
+
+        function showNotification(message, isError = false) {
+            const el = document.createElement('div');
+            el.className = 'notification';
+            el.textContent = message;
+            if (isError) el.style.backgroundColor = '#A52A2A';
+            document.body.appendChild(el);
+            setTimeout(() => el.classList.add('show'), 10);
+            setTimeout(() => {
+                el.classList.remove('show');
+                setTimeout(() => el.remove(), 500);
+            }, 3000);
+        }
+        
+        // Inisialisasi awal UI
+        setupNavigation();
+        setupTabs();
+    </script>
 </body>
 </html>
 
