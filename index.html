@@ -134,6 +134,11 @@
             font-weight: bold; transform: translateX(calc(100% + 30px)); transition: transform 0.4s ease-in-out;
         }
         .notification.show { transform: translateX(0); }
+        .report-box { background: #fff; padding: 25px; border-radius: 15px; margin: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .report-box h3 { margin-top: 0; }
+        .report-controls { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
+        .report-controls input { padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+        .report-controls button { padding: 12px 20px; }
         @media (max-width: 768px) {
             .login-container { padding: 25px; }
             .nav-bar { flex-direction: column; gap: 10px; }
@@ -143,6 +148,7 @@
             .page-header h1 { font-size: 2rem; }
             .dashboard-grid { grid-template-columns: 1fr; }
             .order-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .report-controls { flex-direction: column; align-items: stretch; }
         }
     </style>
 </head>
@@ -198,6 +204,16 @@
             </div>
             <div id="manager-page" class="page">
                 <div class="page-header"><h1>📊 Dashboard Manager</h1><p>Analisis performa dan laporan bisnis</p></div>
+                
+                <div class="report-box">
+                    <h3>Laporan Penjualan</h3>
+                    <div class="report-controls">
+                        <input type="date" id="start-date">
+                        <input type="date" id="end-date">
+                        <button id="download-report-btn" class="action-btn success">Download Laporan (Excel)</button>
+                    </div>
+                </div>
+
                 <div class="dashboard-grid">
                     <div class="stat-card"><span class="stat-icon">💰</span><div class="stat-value" id="manager-total-sales">Rp 0</div><div class="stat-label">Total Penjualan Hari Ini</div></div>
                     <div class="stat-card"><span class="stat-icon">📦</span><div class="stat-value" id="manager-total-orders">0</div><div class="stat-label">Total Transaksi Selesai</div></div>
@@ -210,7 +226,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serverTimestamp, query, where, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serverTimestamp, query, where, getDocs, getDoc, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
         const firebaseConfig = {
@@ -236,52 +252,37 @@
         let unsubscribeOrders = null;
         let unsubscribeCompleted = null;
         
-        // === GATEKEEPER: Cek status login ===
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // Pengguna sudah login, sekarang cek hak akses (otorisasi)
                 const managerEmails = ['fedrik.christian07@gmail.com'];
                 const staffEmails = ['payboss.tanjung@gmail.com'];
                 let userRole = null;
 
-                if (managerEmails.includes(user.email)) {
-                    userRole = 'manager';
-                } else if (staffEmails.includes(user.email)) {
-                    userRole = 'staff';
-                }
+                if (managerEmails.includes(user.email)) userRole = 'manager';
+                else if (staffEmails.includes(user.email)) userRole = 'staff';
 
-                // Hanya jalankan aplikasi jika pengguna punya peran
                 if (userRole) {
                     loginPage.classList.add('hidden');
                     appContainer.classList.remove('hidden');
                     setupUIForRole(userRole);
                     initializeAppLogic();
                 } else {
-                    // Jika email tidak terdaftar, logout paksa
-                    signOut(auth).then(() => {
-                        // Setelah logout, kita bisa menampilkan pesan di halaman login
-                        sessionStorage.setItem('loginError', 'Akun Anda tidak memiliki hak akses.');
-                    });
+                    signOut(auth).then(() => sessionStorage.setItem('loginError', 'Akun Anda tidak memiliki hak akses.'));
                 }
             } else {
-                // Pengguna belum login atau baru saja di-logout
                 loginPage.classList.remove('hidden');
                 appContainer.classList.add('hidden');
-                
-                // Cek apakah ada pesan error dari sesi sebelumnya
                 const storedError = sessionStorage.getItem('loginError');
                 if (storedError) {
                     loginError.textContent = storedError;
                     loginError.classList.remove('hidden');
-                    sessionStorage.removeItem('loginError'); // Hapus pesan setelah ditampilkan
+                    sessionStorage.removeItem('loginError');
                 }
-                
                 if (unsubscribeOrders) { unsubscribeOrders(); unsubscribeOrders = null; }
                 if (unsubscribeCompleted) { unsubscribeCompleted(); unsubscribeCompleted = null; }
             }
         });
 
-        // === Event Listener untuk Form Login ===
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const email = loginForm.email.value;
@@ -290,26 +291,22 @@
 
             signInWithEmailAndPassword(auth, email, password)
                 .catch((error) => {
-                    console.error("Login error:", error.code);
-                    let message = "Terjadi kesalahan. Silakan coba lagi.";
-                    if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
-                        message = "Email atau password salah.";
-                    }
+                    let message = "Email atau password salah.";
                     loginError.textContent = message;
                     loginError.classList.remove('hidden');
                 });
         });
 
-        logoutBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            signOut(auth);
-        });
+        logoutBtn.addEventListener('click', (e) => { e.preventDefault(); signOut(auth); });
 
         function setupUIForRole(role) {
             const managerLink = document.querySelector('.nav-link[data-page="manager"]');
             if (role === 'manager') {
                 managerLink.classList.remove('hidden');
-            } else { // 'staff'
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('start-date').value = today;
+                document.getElementById('end-date').value = today;
+            } else {
                 managerLink.classList.add('hidden');
                 if (document.getElementById('manager-page').classList.contains('active')) {
                     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -329,20 +326,19 @@
                     activeOrders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     renderStaffOrders(activeOrders);
                     updateAllDashboards(activeOrders, completedToday);
-                }, (error) => console.error("Error listening to orders:", error));
+                });
             }
 
             if (!unsubscribeCompleted) {
-                const todayStart = new Date();
-                todayStart.setHours(0, 0, 0, 0);
+                const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
                 unsubscribeCompleted = onSnapshot(query(collection(db, "completedOrders"), where("completedAt", ">=", todayStart)), (snapshot) => {
                     completedToday = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     updateAllDashboards(activeOrders, completedToday);
-                }, (error) => console.error("Error listening to completed orders:", error));
+                });
             }
-            
             setupNavigation();
             setupOrderActionListeners(); 
+            setupReportDownloader();
         }
 
         function renderStaffOrders(orders) {
@@ -436,6 +432,9 @@
         }
         
         function setupOrderActionListeners() {
+            if (document.body.dataset.actionListenerAttached) return;
+            document.body.dataset.actionListenerAttached = 'true';
+
             document.body.addEventListener('click', async function(e) {
                 const actionBtn = e.target.closest('.action-btn');
                 if (!actionBtn || !actionBtn.dataset.action) return;
@@ -460,6 +459,8 @@
         }
         
         function setupNavigation() {
+             if (document.body.dataset.navListenerAttached) return;
+            document.body.dataset.navListenerAttached = 'true';
             const navLinks = document.querySelectorAll('.nav-link');
             const pages = document.querySelectorAll('.page');
             navLinks.forEach(link => {
@@ -483,6 +484,85 @@
             setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 500); }, 3000);
         }
         
+        function setupReportDownloader() {
+            const downloadBtn = document.getElementById('download-report-btn');
+            if (!downloadBtn || downloadBtn.dataset.listenerAttached) return;
+            downloadBtn.dataset.listenerAttached = 'true';
+
+            downloadBtn.addEventListener('click', async () => {
+                const startDateEl = document.getElementById('start-date');
+                const endDateEl = document.getElementById('end-date');
+
+                if (!startDateEl.value || !endDateEl.value) {
+                    showNotification("Silakan pilih rentang tanggal terlebih dahulu.", true);
+                    return;
+                }
+                
+                downloadBtn.textContent = "Memproses...";
+                downloadBtn.disabled = true;
+
+                try {
+                    const start = new Date(startDateEl.value);
+                    start.setHours(0, 0, 0, 0);
+                    const end = new Date(endDateEl.value);
+                    end.setHours(23, 59, 59, 999);
+
+                    const q = query(
+                        collection(db, "completedOrders"),
+                        where("completedAt", ">=", Timestamp.fromDate(start)),
+                        where("completedAt", "<=", Timestamp.fromDate(end))
+                    );
+
+                    const querySnapshot = await getDocs(q);
+                    const reportData = querySnapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
+
+                    if (reportData.length === 0) {
+                        showNotification("Tidak ada data penjualan pada periode ini.", true);
+                        return;
+                    }
+                    
+                    const headers = ["ID Pesanan", "Tanggal Selesai", "Waktu Selesai", "Nama Pelanggan", "No. Meja", "Item Dipesan", "Total Belanja", "Metode Bayar"];
+                    const csvRows = [headers.join(',')];
+                    
+                    reportData.sort((a, b) => a.completedAt.seconds - b.completedAt.seconds);
+
+                    for (const order of reportData) {
+                        const date = new Date(order.completedAt.seconds * 1000);
+                        const orderId = order.id.substring(0, 6);
+                        const formattedDate = date.toLocaleDateString('id-ID', { year: 'numeric', month: '2-digit', day: '2-digit' });
+                        const formattedTime = date.toLocaleTimeString('id-ID');
+                        const customer = `"${order.customer}"`;
+                        const table = order.table;
+                        const items = `"${order.items.map(i => `${i.name} x${i.qty}`).join('; ')}"`;
+                        const total = order.total;
+                        const payment = `"${order.paymentMethod}"`;
+                        csvRows.push([orderId, formattedDate, formattedTime, customer, table, items, total, payment].join(','));
+                    }
+
+                    const csvContent = csvRows.join('\n');
+                    const blob = new Blob([`\uFEFF${csvContent}`], { type: 'text/csv;charset=utf-8;' });
+                    const link = document.createElement("a");
+                    const url = URL.createObjectURL(blob);
+                    link.setAttribute("href", url);
+                    const fileName = `Laporan_Payboss_${startDateEl.value}_sampai_${endDateEl.value}.csv`;
+                    link.setAttribute("download", fileName);
+                    link.style.visibility = 'hidden';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    showNotification("Laporan berhasil di-download.");
+
+                } catch (error) {
+                    console.error("Error downloading report:", error);
+                    showNotification("Gagal men-download laporan.", true);
+                } finally {
+                    downloadBtn.textContent = "Download Laporan (Excel)";
+                    downloadBtn.disabled = false;
+                }
+            });
+        }
+
     </script>
 </body>
 </html>
