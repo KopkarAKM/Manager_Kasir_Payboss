@@ -169,6 +169,12 @@
             border-left: 5px solid #8B4513;
             position: relative;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .menu-item-content {
+            flex-grow: 1;
         }
 
         .menu-item::before {
@@ -228,6 +234,7 @@
             width: 100%;
             transition: all 0.3s ease;
             font-size: 1rem;
+            margin-top: auto;
         }
 
         .order-btn:hover {
@@ -287,15 +294,6 @@
             margin-bottom: 10px;
         }
 
-        .stat-change {
-            font-size: 0.9rem;
-            font-weight: bold;
-            padding: 4px 12px;
-            border-radius: 20px;
-            background: #d4edda;
-            color: #155724;
-        }
-
         /* Order Management */
         .order-list {
             background: white;
@@ -334,140 +332,101 @@
             font-weight: bold;
         }
 
-        .status-pending {
-            background: #fff3cd;
-            color: #856404;
-        }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-preparing { background: #cce5ff; color: #004085; }
+        .status-ready { background: #d4edda; color: #155724; }
 
-        .status-preparing {
-            background: #cce5ff;
-            color: #004085;
-        }
-
-        .status-ready {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .order-details {
-            font-size: 0.95rem;
-            color: #666;
-            line-height: 1.5;
-        }
+        .order-details { font-size: 0.95rem; color: #666; line-height: 1.5; }
 
         .action-btn {
-            background: #8B4513;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            margin: 5px;
+            background: #8B4513; color: white; border: none; padding: 8px 16px;
+            border-radius: 6px; cursor: pointer; font-size: 0.9rem; margin: 5px;
             transition: background 0.3s ease;
         }
-
-        .action-btn:hover {
-            background: #A0522D;
-        }
-
-        .action-btn.success {
-            background: #28a745;
-        }
-
-        .action-btn.success:hover {
-            background: #218838;
-        }
+        .action-btn:hover { background: #A0522D; }
+        .action-btn.success { background: #28a745; }
+        .action-btn.success:hover { background: #218838; }
 
         /* Notification */
         .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #8B4513;
-            color: white;
-            padding: 15px 20px;
-            border-radius: 8px;
-            z-index: 2000;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            font-weight: bold;
-            transform: translateX(calc(100% + 30px));
-            transition: transform 0.4s ease-in-out;
+            position: fixed; top: 20px; right: 20px; background: #8B4513;
+            color: white; padding: 15px 20px; border-radius: 8px; z-index: 2000;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2); font-weight: bold;
+            transform: translateX(calc(100% + 30px)); transition: transform 0.4s ease-in-out;
+        }
+        .notification.show { transform: translateX(0); }
+
+        /* Floating Cart Button */
+        .cart-fab {
+            position: fixed; bottom: 30px; right: 30px; background: #3E2723;
+            color: white; width: 60px; height: 60px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            cursor: pointer; z-index: 1001; transition: transform 0.2s ease;
+        }
+        .cart-fab:hover { transform: scale(1.1); }
+        .cart-badge {
+            position: absolute; top: -5px; right: -5px; background: #D32F2F;
+            color: white; font-size: 12px; font-weight: bold; width: 24px;
+            height: 24px; border-radius: 50%; display: flex;
+            justify-content: center; align-items: center;
         }
 
-        .notification.show {
-            transform: translateX(0);
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); display: flex; justify-content: center;
+            align-items: center; z-index: 2000; opacity: 0; visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
         }
+        .modal-overlay.show { opacity: 1; visibility: visible; }
+        .modal-content {
+            background: white; padding: 30px; border-radius: 15px; width: 90%;
+            max-width: 500px; max-height: 90vh; overflow-y: auto;
+            transform: scale(0.9); transition: transform 0.3s ease;
+        }
+        .modal-overlay.show .modal-content { transform: scale(1); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h2 { margin: 0; color: #3E2723; }
+        .modal-close { font-size: 24px; cursor: pointer; color: #888; border: none; background: none;}
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 500; }
+        .form-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        .cart-item { display: flex; align-items: center; margin-bottom: 15px; }
+        .cart-item-details { flex-grow: 1; }
+        .cart-item-actions { display: flex; align-items: center; }
+        .quantity-btn { background: #eee; border: 1px solid #ccc; padding: 5px 10px; cursor: pointer; }
+        .item-quantity { padding: 0 10px; }
+        .remove-btn { color: #D32F2F; margin-left: 15px; cursor: pointer; border: none; background: none; font-size: 16px; }
+        .cart-total { text-align: right; font-size: 1.2rem; font-weight: bold; margin-top: 20px; }
+        .payment-options button { width: 100%; padding: 15px; margin-bottom: 10px; font-size: 1rem; border: 1px solid #ccc; border-radius: 8px; cursor: pointer; }
+        #qris-image { max-width: 100%; border-radius: 8px; }
+        .whatsapp-btn { background: #25D366; color: white; display: block; text-align: center; padding: 15px; border-radius: 8px; text-decoration: none; font-weight: bold; }
 
         /* Responsive */
         @media (max-width: 768px) {
-            .nav-bar {
-                flex-direction: column;
-                gap: 10px;
-            }
-            .nav-links {
-                justify-content: center;
-                flex-wrap: wrap;
-                gap: 5px;
-            }
-
-            .nav-link {
-                font-size: 0.9rem;
-                padding: 6px 12px;
-            }
-
-            .container {
-                padding: 10px;
-            }
-            .dashboard-grid, .order-list {
-                padding: 15px;
-                margin: 0 10px 15px 10px;
-            }
-
-            .page-header h1 {
-                font-size: 2rem;
-            }
-
-            .tab-button {
-                min-width: 120px;
-                padding: 15px 10px;
-            }
-
-            .menu-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .order-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
+            .nav-bar { flex-direction: column; gap: 10px; }
+            .nav-links { justify-content: center; flex-wrap: wrap; gap: 5px; }
+            .container { padding: 10px; }
+            .dashboard-grid, .order-list { padding: 15px; margin: 0 10px 15px 10px; }
+            .page-header h1 { font-size: 2rem; }
+            .menu-grid { grid-template-columns: 1fr; }
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .order-header { flex-direction: column; align-items: flex-start; gap: 10px; }
         }
 
         /* Loading Animation */
         .loading {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-top-color: #fff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            vertical-align: middle;
-            margin-right: 5px;
+            display: inline-block; width: 16px; height: 16px;
+            border: 3px solid rgba(255,255,255,0.3); border-top-color: #fff;
+            border-radius: 50%; animation: spin 1s linear infinite;
+            vertical-align: middle; margin-right: 5px;
         }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-    <!-- Navigation -->
+    <!-- Navigation (for staff) -->
     <nav class="nav-bar">
         <a href="#" class="nav-brand">☕ Payboss Cafe</a>
         <div class="nav-links">
@@ -478,8 +437,9 @@
         </div>
     </nav>
 
+    <!-- Main Content -->
     <div class="container">
-        <!-- Menu Page -->
+        <!-- Menu Page (for customers and staff) -->
         <div id="menu-page" class="page active">
             <div class="page-header">
                 <h1>📋 Menu Payboss Cafe</h1>
@@ -494,15 +454,14 @@
                 <button class="tab-button" data-tab="non-coffee">🥤 Non-Kopi</button>
             </div>
 
-            <!-- Grid untuk setiap kategori menu -->
             <div id="snacks" class="tab-content active"><h2 class="category-title">🍟 Makanan Ringan</h2><div class="menu-grid" id="snacks-grid"></div></div>
             <div id="pastry" class="tab-content"><h2 class="category-title">🥐 Roti & Manis</h2><div class="menu-grid" id="pastry-grid"></div></div>
             <div id="main" class="tab-content"><h2 class="category-title">🍛 Makanan Berat</h2><div class="menu-grid" id="main-grid"></div></div>
             <div id="coffee" class="tab-content"><h2 class="category-title">☕ Kopi</h2><div class="menu-grid" id="coffee-grid"></div></div>
             <div id="non-coffee" class="tab-content"><h2 class="category-title">🥤 Non-Kopi</h2><div class="menu-grid" id="non-coffee-grid"></div></div>
         </div>
-
-        <!-- Cashier Page -->
+        
+        <!-- Staff-only pages -->
         <div id="cashier-page" class="page">
             <div class="page-header"><h1>💰 Sistem Kasir</h1><p>Kelola pesanan dan pembayaran pelanggan</p></div>
             <div class="dashboard-grid">
@@ -512,8 +471,6 @@
             </div>
             <div class="order-list"><h3>📋 Daftar Pesanan</h3><div id="cashier-orders"></div></div>
         </div>
-
-        <!-- Kitchen Page -->
         <div id="kitchen-page" class="page">
             <div class="page-header"><h1>👨‍🍳 Dashboard Dapur</h1><p>Kelola pesanan yang perlu dimasak</p></div>
             <div class="dashboard-grid">
@@ -523,11 +480,9 @@
             </div>
             <div class="order-list"><h3>🍳 Antrian Pesanan</h3><div id="kitchen-orders"></div></div>
         </div>
-
-        <!-- Manager Page -->
         <div id="manager-page" class="page">
-             <div class="page-header"><h1>📊 Dashboard Manager</h1><p>Analisis performa dan laporan bisnis</p></div>
-             <div class="dashboard-grid">
+            <div class="page-header"><h1>📊 Dashboard Manager</h1><p>Analisis performa dan laporan bisnis</p></div>
+            <div class="dashboard-grid">
                 <div class="stat-card"><span class="stat-icon">💰</span><div class="stat-value" id="manager-total-sales">Rp 0</div><div class="stat-label">Total Penjualan Hari Ini</div></div>
                 <div class="stat-card"><span class="stat-icon">📦</span><div class="stat-value" id="manager-total-orders">0</div><div class="stat-label">Total Transaksi Selesai</div></div>
                 <div class="stat-card"><span class="stat-icon">📈</span><div class="stat-value" id="manager-avg-order">Rp 0</div><div class="stat-label">Rata-rata per Transaksi</div></div>
@@ -535,14 +490,24 @@
             <div class="order-list"><h3>📊 Menu Terlaris Hari Ini</h3><div id="best-selling-list"><p>Belum ada data penjualan hari ini.</p></div></div>
         </div>
     </div>
+    
+    <!-- Floating Cart Button -->
+    <div class="cart-fab" id="cart-fab">
+        🛒
+        <span class="cart-badge" id="cart-badge">0</span>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal-overlay" id="cart-modal"> <div class="modal-content"> <div class="modal-header"> <h2>Keranjang Anda</h2> <button class="modal-close">&times;</button> </div> <div id="cart-items"></div> <div class="cart-total" id="cart-total"></div> <hr> <div class="form-group"> <label for="customer-name">Nama Anda</label> <input type="text" id="customer-name" placeholder="Masukkan nama Anda"> </div> <div class="form-group"> <label for="table-number">Nomor Meja</label> <input type="number" id="table-number" placeholder="Masukkan nomor meja"> </div> <button class="order-btn" id="checkout-btn">Lanjutkan ke Pembayaran</button> </div> </div>
+    <div class="modal-overlay" id="payment-modal"> <div class="modal-content"> <div class="modal-header"> <h2>Pilih Metode Pembayaran</h2> <button class="modal-close">&times;</button> </div> <div class="payment-options"> <button id="pay-cash-btn">Bayar di Kasir (Cash)</button> <button id="pay-qris-btn">Bayar dengan QRIS</button> </div> </div> </div>
+    <div class="modal-overlay" id="qris-modal"> <div class="modal-content" style="text-align: center;"> <div class="modal-header"> <h2>Scan untuk Membayar</h2> <button class="modal-close">&times;</button> </div> <img id="qris-image" src="https://i.imgur.com/Pc4W6zN.jpeg" alt="QRIS Code"> <p style="margin-top: 15px;">Setelah membayar, klik tombol di bawah untuk mengirim bukti ke kasir via WhatsApp.</p> <button class="order-btn" id="confirm-qris-payment-btn">Saya Sudah Bayar & Kirim Bukti</button> </div> </div>
+    <div class="modal-overlay" id="success-modal"> <div class="modal-content" style="text-align: center;"> <div class="modal-header"> <h2>Pesanan Diterima!</h2> <button class="modal-close">&times;</button> </div> <div id="success-message"></div> <a href="#" id="whatsapp-link" class="whatsapp-btn" target="_blank" style="display: none; margin-top: 20px;">Kirim Pesanan ke Kasir</a> </div> </div>
 
     <!-- Firebase SDK -->
     <script type="module">
-        // Import fungsi dari Firebase SDK
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serverTimestamp, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serverTimestamp, query, where, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-        // Konfigurasi Firebase Anda
         const firebaseConfig = {
           apiKey: "AIzaSyB0nHqdAw_dV9pHcQ_cSnWtNsn4CwwwUNc",
           authDomain: "payboss-cafe-system.firebaseapp.com",
@@ -553,63 +518,98 @@
           measurementId: "G-H1NJ369HE9"
         };
 
-        // Inisialisasi Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         
-        // Variabel global untuk menyimpan data
+        // === STATE APLIKASI ===
+        let cart = [];
         let activeOrders = [];
         let completedToday = [];
+        let menuCache = [];
 
         // === FUNGSI UTAMA REAL-TIME ===
         
-        // 1. Mengawasi koleksi 'menu'
         onSnapshot(collection(db, 'menu'), (snapshot) => {
-            document.querySelectorAll('.menu-grid').forEach(grid => grid.innerHTML = '');
-            snapshot.docs.forEach(doc => {
-                const item = { id: doc.id, ...doc.data() };
-                const grid = document.getElementById(`${item.category}-grid`);
-                if (grid) {
-                    grid.appendChild(createMenuCard(item));
-                }
-            });
+            menuCache = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            renderAllMenus();
         });
 
-        // 2. Mengawasi koleksi 'orders' (pesanan aktif)
         onSnapshot(collection(db, 'orders'), (snapshot) => {
             activeOrders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            renderAllOrders();
+            renderStaffOrders();
             updateAllDashboards();
         });
 
-        // 3. Mengawasi koleksi 'completedOrders' untuk hari ini
         const todayStart = new Date();
         todayStart.setHours(0, 0, 0, 0);
-        const completedQuery = query(collection(db, "completedOrders"), where("completedAt", ">=", todayStart));
-        onSnapshot(completedQuery, (snapshot) => {
+        onSnapshot(query(collection(db, "completedOrders"), where("completedAt", ">=", todayStart)), (snapshot) => {
             completedToday = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             updateAllDashboards();
         });
 
-        // === FUNGSI PEMBUAT TAMPILAN (RENDER) ===
+        // === FUNGSI RENDER TAMPILAN ===
+        function renderAllMenus() {
+            document.querySelectorAll('.menu-grid').forEach(grid => grid.innerHTML = '');
+            menuCache.forEach(item => {
+                const grid = document.getElementById(`${item.category}-grid`);
+                if (grid) grid.appendChild(createMenuCard(item));
+            });
+        }
 
         function createMenuCard(item) {
             const card = document.createElement('div');
             card.className = 'menu-item';
             const variantsHtml = item.variants ? `<div class="item-variants"><strong>Varian:</strong> ${item.variants}</div>` : '';
             card.innerHTML = `
-                <div class="item-name">${item.name}</div>
-                <div class="item-description">${item.description}</div>
-                ${variantsHtml}
-                <div class="item-price">Rp ${item.price.toLocaleString('id-ID')}</div>
-                <button class="order-btn" data-id="${item.id}">🛒 Pesan Sekarang</button>
+                <div class="menu-item-content">
+                    <div class="item-name">${item.name}</div>
+                    <div class="item-description">${item.description}</div>
+                    ${variantsHtml}
+                    <div class="item-price">Rp ${item.price.toLocaleString('id-ID')}</div>
+                </div>
+                <button class="order-btn" data-id="${item.id}">+ Keranjang</button>
             `;
             return card;
         }
-        
-        function renderAllOrders() {
+
+        function renderCart() {
+            const cartItemsContainer = document.getElementById('cart-items');
+            const cartTotalEl = document.getElementById('cart-total');
+            cartItemsContainer.innerHTML = '';
+            let total = 0;
+
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = '<p>Keranjang Anda masih kosong.</p>';
+            } else {
+                cart.forEach(item => {
+                    const itemTotal = item.price * item.qty;
+                    total += itemTotal;
+                    const cartItemEl = document.createElement('div');
+                    cartItemEl.className = 'cart-item';
+                    cartItemEl.innerHTML = `
+                        <div class="cart-item-details">
+                            <strong>${item.name}</strong><br>
+                            Rp ${itemTotal.toLocaleString('id-ID')}
+                        </div>
+                        <div class="cart-item-actions">
+                            <button class="quantity-btn" data-id="${item.id}" data-action="decrease">-</button>
+                            <span class="item-quantity">${item.qty}</span>
+                            <button class="quantity-btn" data-id="${item.id}" data-action="increase">+</button>
+                            <button class="remove-btn" data-id="${item.id}">&times;</button>
+                        </div>
+                    `;
+                    cartItemsContainer.appendChild(cartItemEl);
+                });
+            }
+            cartTotalEl.textContent = `Total: Rp ${total.toLocaleString('id-ID')}`;
+            document.getElementById('cart-badge').textContent = cart.reduce((sum, item) => sum + item.qty, 0);
+        }
+
+        function renderStaffOrders() {
             const cashierContainer = document.getElementById('cashier-orders');
             const kitchenContainer = document.getElementById('kitchen-orders');
+            if(!cashierContainer || !kitchenContainer) return;
+
             const kitchenQueue = activeOrders.filter(o => o.status === 'pending' || o.status === 'preparing');
             
             cashierContainer.innerHTML = activeOrders.length > 0 ? '' : '<p>Belum ada pesanan aktif.</p>';
@@ -620,7 +620,7 @@
         }
         
         function createOrderElement(order, type) {
-            const div = document.createElement('div');
+             const div = document.createElement('div');
             div.className = 'order-item';
             const statusMap = {
                 pending: { text: 'Menunggu', class: 'status-pending' },
@@ -640,7 +640,7 @@
 
             div.innerHTML = `
                 <div class="order-header">
-                    <span class="order-id">Meja ${order.table}</span>
+                    <span class="order-id">Meja ${order.table} - ${order.customer}</span>
                     <span class="order-status ${statusMap[order.status].class}">${statusMap[order.status].text}</span>
                 </div>
                 <div class="order-details">
@@ -652,29 +652,36 @@
             return div;
         }
 
-        // === FUNGSI PEMBARUAN DATA STATISTIK ===
-
+        // === FUNGSI PEMBARUAN DASHBOARD (DIPERBAIKI) ===
         function updateAllDashboards() {
             const totalSales = completedToday.reduce((sum, order) => sum + order.total, 0);
             
+            // Helper untuk update elemen jika ada
+            const updateElementText = (id, text) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = text;
+            };
+            
             // Statistik Kasir & Dapur
-            document.getElementById('total-orders').textContent = activeOrders.length;
-            document.getElementById('pending-orders').textContent = activeOrders.filter(o => o.status === 'pending').length;
-            document.getElementById('cooking-orders').textContent = activeOrders.filter(o => o.status === 'preparing').length;
-            document.getElementById('ready-orders').textContent = activeOrders.filter(o => o.status === 'ready').length;
-            document.getElementById('daily-revenue').textContent = `Rp ${totalSales.toLocaleString('id-ID')}`;
-            document.getElementById('completed-orders-kitchen').textContent = completedToday.length;
+            updateElementText('total-orders', activeOrders.length);
+            updateElementText('pending-orders', activeOrders.filter(o => o.status === 'pending').length);
+            updateElementText('cooking-orders', activeOrders.filter(o => o.status === 'preparing').length);
+            updateElementText('ready-orders', activeOrders.filter(o => o.status === 'ready').length);
+            updateElementText('daily-revenue', `Rp ${totalSales.toLocaleString('id-ID')}`);
+            updateElementText('completed-orders-kitchen', completedToday.length);
 
             // Statistik Manager
-            document.getElementById('manager-total-sales').textContent = `Rp ${totalSales.toLocaleString('id-ID')}`;
-            document.getElementById('manager-total-orders').textContent = completedToday.length;
+            updateElementText('manager-total-sales', `Rp ${totalSales.toLocaleString('id-ID')}`);
+            updateElementText('manager-total-orders', completedToday.length);
             const avgOrder = completedToday.length > 0 ? Math.round(totalSales / completedToday.length) : 0;
-            document.getElementById('manager-avg-order').textContent = `Rp ${avgOrder.toLocaleString('id-ID')}`;
+            updateElementText('manager-avg-order', `Rp ${avgOrder.toLocaleString('id-ID')}`);
+            
             updateBestSelling();
         }
         
         function updateBestSelling() {
-            const container = document.getElementById('best-selling-list');
+             const container = document.getElementById('best-selling-list');
+             if(!container) return; // Tambahkan pengecekan
             if (completedToday.length === 0) {
                 container.innerHTML = '<p>Belum ada data penjualan hari ini.</p>';
                 return;
@@ -699,79 +706,174 @@
                 </div>
             `).join('');
         }
+        
+        // === LOGIKA KERANJANG BELANJA (CART) ===
+        function addToCart(itemId) {
+            const itemInCart = cart.find(item => item.id === itemId);
+            if (itemInCart) {
+                itemInCart.qty++;
+            } else {
+                const itemFromMenu = menuCache.find(item => item.id === itemId);
+                cart.push({ ...itemFromMenu, qty: 1 });
+            }
+            showNotification(`${cart.find(i=>i.id===itemId).name} ditambahkan ke keranjang.`);
+            renderCart();
+        }
 
-        // === FUNGSI AKSI PENGGUNA (EVENT LISTENERS) ===
+        function updateCartQuantity(itemId, action) {
+            const itemInCart = cart.find(item => item.id === itemId);
+            if (!itemInCart) return;
 
-        document.body.addEventListener('click', async function(e) {
-            const orderBtn = e.target.closest('.order-btn');
-            const actionBtn = e.target.closest('.action-btn');
-
-            if (orderBtn) {
-                const button = orderBtn;
-                const originalText = button.innerHTML;
-                button.innerHTML = '<span class="loading"></span>';
-                button.disabled = true;
-
-                const menuId = button.dataset.id;
-                try {
-                    // Ambil data menu langsung dari Firebase untuk memastikan harga terbaru
-                    const menuRef = doc(db, 'menu', menuId);
-                    const menuDoc = await (await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js")).getDoc(menuRef);
-
-                    if (!menuDoc.exists()) {
-                        throw new Error("Menu item not found!");
-                    }
-                    const item = menuDoc.data();
-
-                    const newOrder = {
-                        customer: "Pelanggan",
-                        table: Math.floor(Math.random() * 20) + 1,
-                        items: [{ name: item.name, qty: 1, price: item.price }],
-                        total: item.price,
-                        status: 'pending',
-                        createdAt: serverTimestamp()
-                    };
-                    await addDoc(collection(db, 'orders'), newOrder);
-                    showNotification(`${item.name} berhasil dipesan!`);
-                } catch (error) {
-                    showNotification(`Gagal memesan: ${error.message}`, true);
-                    console.error(error);
-                } finally {
-                    button.innerHTML = originalText;
-                    button.disabled = false;
+            if (action === 'increase') {
+                itemInCart.qty++;
+            } else if (action === 'decrease') {
+                itemInCart.qty--;
+                if (itemInCart.qty <= 0) {
+                    cart = cart.filter(item => item.id !== itemId);
                 }
             }
+            renderCart();
+        }
+        
+        function removeFromCart(itemId) {
+            cart = cart.filter(item => item.id !== itemId);
+            renderCart();
+        }
 
+        async function placeOrder(paymentMethod) {
+            const customerName = document.getElementById('customer-name').value.trim();
+            const tableNumber = document.getElementById('table-number').value.trim();
+            
+            if (!customerName || !tableNumber) {
+                showNotification("Nama dan nomor meja wajib diisi!", true);
+                return;
+            }
+
+            const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const itemsForDB = cart.map(item => ({ name: item.name, qty: item.qty, price: item.price }));
+
+            const newOrder = {
+                customer: customerName,
+                table: tableNumber,
+                items: itemsForDB,
+                total: total,
+                status: 'pending', 
+                paymentMethod: paymentMethod,
+                createdAt: serverTimestamp()
+            };
+
+            try {
+                const docRef = await addDoc(collection(db, 'orders'), newOrder);
+                
+                const waNumber = "6285349972513";
+                let message = `*Pesanan Baru - Payboss Cafe*\n\n`;
+                message += `ID Pesanan: ${docRef.id.substring(0, 5)}\n`;
+                message += `Nama: *${customerName}*\n`;
+                message += `Meja: *${tableNumber}*\n\n`;
+                message += `*Item Pesanan:*\n`;
+                itemsForDB.forEach(item => {
+                    message += `- ${item.name} (x${item.qty})\n`;
+                });
+                message += `\nTotal: *Rp ${total.toLocaleString('id-ID')}*\n`;
+                message += `Pembayaran: *${paymentMethod}*\n\n`;
+                
+                const successMsgContainer = document.getElementById('success-message');
+                const waLink = document.getElementById('whatsapp-link');
+
+                if (paymentMethod === 'QRIS') {
+                    message += `_Mohon lampirkan bukti pembayaran Anda._`;
+                    successMsgContainer.innerHTML = `<p>Pesanan Anda telah diterima! Silakan kirim detail pesanan ini beserta bukti bayar ke WhatsApp kasir.</p>`;
+                    waLink.style.display = 'block';
+                } else { // Cash
+                    successMsgContainer.innerHTML = `<p>Pesanan Anda telah diterima! Silakan lakukan pembayaran di kasir dan tunjukkan ID Pesanan: <strong>${docRef.id.substring(0, 5)}</strong>.</p>`;
+                    waLink.style.display = 'none';
+                }
+
+                waLink.href = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
+                
+                cart = [];
+                renderCart();
+                closeAllModals();
+                document.getElementById('success-modal').classList.add('show');
+
+            } catch (error) {
+                console.error("Gagal membuat pesanan:", error);
+                showNotification("Gagal membuat pesanan!", true);
+            }
+        }
+
+        // === EVENT LISTENERS APLIKASI ===
+
+        document.body.addEventListener('click', async function(e) {
+            const addToCartBtn = e.target.closest('.order-btn[data-id]');
+            if (addToCartBtn) {
+                addToCart(addToCartBtn.dataset.id);
+            }
+
+            const quantityBtn = e.target.closest('.quantity-btn');
+            if(quantityBtn){
+                updateCartQuantity(quantityBtn.dataset.id, quantityBtn.dataset.action);
+            }
+
+            const removeBtn = e.target.closest('.remove-btn');
+            if(removeBtn){
+                removeFromCart(removeBtn.dataset.id);
+            }
+
+            const actionBtn = e.target.closest('.action-btn');
             if (actionBtn) {
                 const orderId = actionBtn.dataset.id;
                 const action = actionBtn.dataset.action;
                 const orderRef = doc(db, 'orders', orderId);
 
                 try {
-                    if (action === 'confirm') {
-                        await updateDoc(orderRef, { status: 'preparing' });
-                        showNotification('Pesanan dikonfirmasi ke dapur.');
-                    } else if (action === 'finish') {
-                        await updateDoc(orderRef, { status: 'ready' });
-                        showNotification('Pesanan siap disajikan.');
-                    } else if (action === 'complete') {
+                    if (action === 'confirm') await updateDoc(orderRef, { status: 'preparing' });
+                    else if (action === 'finish') await updateDoc(orderRef, { status: 'ready' });
+                    else if (action === 'complete') {
                         const orderData = activeOrders.find(o => o.id === orderId);
                         if (orderData) {
                             const { id, ...archiveData } = orderData;
                             await addDoc(collection(db, 'completedOrders'), { ...archiveData, completedAt: serverTimestamp() });
                             await deleteDoc(orderRef);
                             showNotification('Pesanan selesai.');
-                        } else {
-                             throw new Error("Order data not found in local state.");
                         }
                     }
-                } catch (error) {
-                    showNotification(`Gagal: ${error.message}`, true);
-                    console.error(error);
-                }
+                } catch (error) { console.error(error); showNotification('Gagal!', true); }
             }
         });
 
+        document.getElementById('cart-fab').addEventListener('click', () => {
+            renderCart();
+            document.getElementById('cart-modal').classList.add('show');
+        });
+
+        document.getElementById('checkout-btn').addEventListener('click', () => {
+            if (cart.length === 0) {
+                showNotification("Keranjang Anda kosong!", true);
+                return;
+            }
+            if(!document.getElementById('customer-name').value || !document.getElementById('table-number').value){
+                 showNotification("Nama dan Nomor Meja wajib diisi!", true);
+                return;
+            }
+            closeAllModals();
+            document.getElementById('payment-modal').classList.add('show');
+        });
+
+        document.getElementById('pay-cash-btn').addEventListener('click', () => placeOrder('Bayar di Kasir'));
+        
+        document.getElementById('pay-qris-btn').addEventListener('click', () => {
+            closeAllModals();
+            document.getElementById('qris-modal').classList.add('show');
+        });
+
+        document.getElementById('confirm-qris-payment-btn').addEventListener('click', () => placeOrder('QRIS'));
+
+        function closeAllModals() {
+            document.querySelectorAll('.modal-overlay').forEach(modal => modal.classList.remove('show'));
+        }
+        document.querySelectorAll('.modal-close').forEach(btn => btn.addEventListener('click', closeAllModals));
+        
         // === FUNGSI-FUNGSI UI STANDAR ===
         
         function setupNavigation() {
@@ -816,7 +918,6 @@
             }, 3000);
         }
         
-        // Inisialisasi awal UI
         setupNavigation();
         setupTabs();
     </script>
