@@ -105,7 +105,7 @@
     // =====================
     //  KONFIGURASI
     // =====================
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwYZBB4E_CJtClEjRchz4RKEkQBV9969PZjW8Dng4taRnH6xx_-k9jUHCb4N7CsAdqwFQ/exec"; // ← URL Web App Anda
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzpbHXBWrxYwR57tQm394NXnS7xeSDTZDtSawU6Zzk3vXMlQ_UaixdhvxyebDpUZk1Wjg/exec";
     const REFRESH_INTERVAL = 15000; // 15s
 
     let allOrders = [];
@@ -121,7 +121,6 @@
     async function initConnection(){
       const conn = document.getElementById('conn');
       const demoFlag = document.getElementById('demoFlag');
-      // Demo mode jika URL belum diisi atau health check gagal
       if (!SCRIPT_URL || /YOUR_WEB_APP_URL_HERE/i.test(SCRIPT_URL)) {
         demoMode = true; conn.textContent = 'demo'; demoFlag.style.display='inline-flex';
         return;
@@ -150,7 +149,6 @@
     async function fetchOrders(){
       const loadingIndicator = document.getElementById('loading-indicator');
       if (demoMode){
-        // Data contoh agar bisa langsung dipreview
         allOrders = getMockOrders();
         if (loadingIndicator) loadingIndicator.style.display='none';
         renderDashboards();
@@ -182,7 +180,7 @@
       container.innerHTML = '';
       if(!allOrders.length){ container.innerHTML='<p>Belum ada pesanan masuk.</p>'; total.textContent=0; return; }
       total.textContent = allOrders.length;
-      allOrders.forEach(o => container.appendChild(createOrderCard(o)));
+      allOrders.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).forEach(o => container.appendChild(createOrderCard(o)));
     }
 
     function renderKitchen(){
@@ -192,7 +190,7 @@
       const active = allOrders.filter(o => ['pending','preparing'].includes((o.status||'').toLowerCase()));
       if(!active.length){ container.innerHTML='<p>Tidak ada pesanan aktif untuk disiapkan.</p>'; activeEl.textContent=0; return; }
       activeEl.textContent = active.length;
-      active.forEach(o => container.appendChild(createOrderCard(o)));
+      active.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp)).forEach(o => container.appendChild(createOrderCard(o)));
     }
 
     function createOrderCard(order){
@@ -256,7 +254,12 @@
 
       if(demoMode){ return; }
       try{
-        const r = await fetch(SCRIPT_URL, { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ action:'updateStatus', orderId, status:newStatus }) });
+        const r = await fetch(SCRIPT_URL, { 
+            method:'POST',
+            redirect: 'follow',
+            headers:{ 'Content-Type':'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action:'updateStatus', orderId, status:newStatus }) 
+        });
         if(!r.ok) throw new Error('HTTP '+r.status);
       }catch(e){
         console.error('[updateStatus] Failed:', e);
