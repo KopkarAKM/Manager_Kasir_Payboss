@@ -210,7 +210,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serverTimestamp, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serverTimestamp, query, where, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
         const firebaseConfig = {
@@ -239,25 +239,43 @@
         // === GATEKEEPER: Cek status login ===
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // Pengguna sudah login -> Tampilkan aplikasi utama
-                loginPage.classList.add('hidden');
-                appContainer.classList.remove('hidden');
+                // Pengguna sudah login, sekarang cek hak akses (otorisasi)
+                const managerEmails = ['fedrik.christian07@gmail.com'];
+                const staffEmails = ['payboss.tanjung@gmail.com'];
+                let userRole = null;
 
-                // Tentukan peran pengguna berdasarkan email
-                let userRole = 'staff'; // Peran default
-                if (user.email === 'fedrik.christian07@gmail.com') {
+                if (managerEmails.includes(user.email)) {
                     userRole = 'manager';
+                } else if (staffEmails.includes(user.email)) {
+                    userRole = 'staff';
                 }
-                
-                // Siapkan UI sesuai peran
-                setupUIForRole(userRole);
-                
-                initializeAppLogic();
+
+                // Hanya jalankan aplikasi jika pengguna punya peran
+                if (userRole) {
+                    loginPage.classList.add('hidden');
+                    appContainer.classList.remove('hidden');
+                    setupUIForRole(userRole);
+                    initializeAppLogic();
+                } else {
+                    // Jika email tidak terdaftar, logout paksa
+                    signOut(auth).then(() => {
+                        // Setelah logout, kita bisa menampilkan pesan di halaman login
+                        sessionStorage.setItem('loginError', 'Akun Anda tidak memiliki hak akses.');
+                    });
+                }
             } else {
-                // Pengguna belum login -> Tampilkan halaman login
+                // Pengguna belum login atau baru saja di-logout
                 loginPage.classList.remove('hidden');
                 appContainer.classList.add('hidden');
-                // Hentikan listener data jika ada
+                
+                // Cek apakah ada pesan error dari sesi sebelumnya
+                const storedError = sessionStorage.getItem('loginError');
+                if (storedError) {
+                    loginError.textContent = storedError;
+                    loginError.classList.remove('hidden');
+                    sessionStorage.removeItem('loginError'); // Hapus pesan setelah ditampilkan
+                }
+                
                 if (unsubscribeOrders) { unsubscribeOrders(); unsubscribeOrders = null; }
                 if (unsubscribeCompleted) { unsubscribeCompleted(); unsubscribeCompleted = null; }
             }
@@ -282,21 +300,17 @@
                 });
         });
 
-        // === Event Listener untuk Tombol Logout ===
         logoutBtn.addEventListener('click', (e) => {
             e.preventDefault();
             signOut(auth);
         });
 
-        // === Fungsi untuk mengatur UI berdasarkan peran pengguna ===
         function setupUIForRole(role) {
             const managerLink = document.querySelector('.nav-link[data-page="manager"]');
             if (role === 'manager') {
                 managerLink.classList.remove('hidden');
             } else { // 'staff'
                 managerLink.classList.add('hidden');
-
-                // Jika halaman yang aktif adalah manager, pindah ke kasir
                 if (document.getElementById('manager-page').classList.contains('active')) {
                     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
                     document.getElementById('cashier-page').classList.add('active');
@@ -306,8 +320,6 @@
             }
         }
 
-
-        // === Fungsi untuk menjalankan semua logika aplikasi setelah login berhasil ===
         function initializeAppLogic() {
             let activeOrders = [];
             let completedToday = [];
@@ -317,7 +329,7 @@
                     activeOrders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     renderStaffOrders(activeOrders);
                     updateAllDashboards(activeOrders, completedToday);
-                });
+                }, (error) => console.error("Error listening to orders:", error));
             }
 
             if (!unsubscribeCompleted) {
@@ -326,15 +338,13 @@
                 unsubscribeCompleted = onSnapshot(query(collection(db, "completedOrders"), where("completedAt", ">=", todayStart)), (snapshot) => {
                     completedToday = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     updateAllDashboards(activeOrders, completedToday);
-                });
+                }, (error) => console.error("Error listening to completed orders:", error));
             }
             
             setupNavigation();
             setupOrderActionListeners(); 
         }
 
-        // === Kumpulan Fungsi Render dan Aksi ===
-        
         function renderStaffOrders(orders) {
             const cashierContainer = document.getElementById('cashier-orders');
             const kitchenContainer = document.getElementById('kitchen-orders');
@@ -437,7 +447,6 @@
                     if (action === 'confirm') await updateDoc(orderRef, { status: 'preparing' });
                     else if (action === 'finish') await updateDoc(orderRef, { status: 'ready' });
                     else if (action === 'complete') {
-                        // Ambil data order terbaru sebelum memindahkan
                         const orderDoc = await getDoc(orderRef);
                         if (orderDoc.exists()){
                             const orderData = orderDoc.data();
