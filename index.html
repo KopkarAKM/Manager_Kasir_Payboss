@@ -1,437 +1,279 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payboss Cafe - Dasbor Kasir & Dapur</title>
-    <style>
-        body {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f7f2ed;
-        }
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 15px;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #3E2723;
-            padding: 20px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-        }
-        .header h1 {
-            font-size: 2.2rem;
-            margin: 0;
-            font-weight: bold;
-        }
-        .header p {
-            font-size: 1rem;
-            margin: 5px 0 0 0;
-            color: #666;
-        }
-        .role-selector {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 25px;
-        }
-        .role-btn {
-            padding: 12px 25px;
-            background: #FFFFFF;
-            color: #8B4513;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-        .role-btn:hover {
-            background: #fdfaf7;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-            transform: translateY(-2px);
-        }
-        .role-btn.active {
-            background: #8B4513;
-            color: #FFFFFF;
-            border-color: #8B4513;
-        }
-        .view {
-            display: none;
-        }
-        .view.active {
-            display: block;
-            animation: fadeIn 0.5s;
-        }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        
-        .dashboard-container {
-            background: white;
-            border-radius: 12px;
-            padding: 20px 30px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        }
-        .dashboard-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #eee;
-        }
-        .dashboard-header h2 {
-            margin: 0;
-            color: #3E2723;
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .stats {
-            font-size: 1.1rem;
-            font-weight: 500;
-            color: #555;
-        }
-        #loading-indicator {
-            text-align: center;
-            font-size: 1.2rem;
-            color: #666;
-            padding: 40px;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payboss Cafe – Dasbor Kasir & Dapur</title>
+  <style>
+    :root { --bg:#f7f2ed; --ink:#3E2723; --card:#ffffff; --muted:#666; --line:#eee; --soft:#fefbf6; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Segoe UI Emoji"; background:var(--bg); color:#111; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 16px; }
+    .header { display:flex; gap:14px; align-items:center; justify-content:center; text-align:center; background:var(--card); border-radius:14px; padding:18px 20px; color:var(--ink); box-shadow:0 4px 15px rgba(0,0,0,.06); }
+    .header h1 { margin:0; font-size: clamp(22px, 3.6vw, 34px); }
+    .role-selector { display:flex; justify-content:center; gap:10px; margin:18px 0 22px; flex-wrap:wrap; }
+    .role-btn { padding:10px 18px; border-radius:10px; border:1px solid #ddd; background:#fff; color:#8B4513; font-weight:700; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,.06); transition:.2s; }
+    .role-btn:hover { transform: translateY(-2px); }
+    .role-btn.active { background:#8B4513; color:#fff; border-color:#8B4513; }
+    .view { display:none; }
+    .view.active { display:block; animation: fade .35s ease; }
+    @keyframes fade { from { opacity:0; transform: translateY(6px);} to { opacity:1; transform:none;} }
 
-        .orders-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
-        }
-        .order-card {
-            background: #fefbf6;
-            border-radius: 12px;
-            border: 1px solid #eaddd0;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
-            transition: all 0.3s ease;
-        }
-        
-        .card-header {
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #eaddd0;
-        }
-        .order-id { font-weight: bold; font-size: 1.1rem; color: #3E2723; }
-        .order-status {
-            padding: 6px 15px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: bold;
-        }
-        .status-pending { background-color: #fff3cd; color: #664d03; }
-        .status-preparing { background-color: #cff4fc; color: #055160; }
-        .status-ready { background-color: #d1e7dd; color: #0f5132; }
-        .status-delivered { background-color: #e2e3e5; color: #41464b; }
-        
-        .card-body {
-            padding: 20px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        .order-details, .order-items {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .detail-item {
-            display: flex;
-            font-size: 0.95rem;
-        }
-        .detail-item strong {
-            width: 90px;
-            flex-shrink: 0;
-            color: #666;
-            font-weight: 500;
-        }
-        .detail-item span {
-            color: #111;
-            font-weight: 600;
-        }
-        
-        .order-items-title {
-            font-weight: bold;
-            color: #3E2723;
-            margin-bottom: 5px;
-            font-size: 1rem;
-        }
-        .order-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 4px 0;
-            font-size: 0.95rem;
-        }
-        .item-name-variant { color: #333; }
-        .item-quantity { font-weight: bold; }
+    .dashboard { background:var(--card); border-radius:14px; box-shadow:0 4px 15px rgba(0,0,0,.06); padding:16px; }
+    .dashboard-header { display:flex; gap:10px; align-items:center; justify-content:space-between; border-bottom:1px solid var(--line); padding-bottom:12px; margin-bottom:12px; }
+    .dashboard-header h2 { margin:0; color:var(--ink); font-size: clamp(18px, 3vw, 22px); }
+    .stats { color:var(--muted); font-weight:600; }
 
-        .card-footer {
-            padding: 15px 20px;
-            background-color: transparent;
-        }
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-start;
-        }
-        .btn {
-            padding: 10px 18px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 0.9rem;
-            color: white;
-            transition: all 0.3s ease;
-        }
-        .btn:hover {
-            opacity: 0.85;
-            transform: translateY(-2px);
-        }
-        .btn-warning { background: #ffc107; color: #333; }
-        .btn-success { background: #198754; }
-        .btn-info { background: #0dcaf0; }
+    #loading-indicator { text-align:center; color:var(--muted); padding:24px 6px; }
 
-        @media (max-width: 992px) {
-            .card-body {
-                grid-template-columns: 1fr;
-            }
-        }
-        @media (max-width: 768px) {
-            .header { flex-direction: column; }
-            .header h1 { font-size: 1.8rem; }
-            .role-btn { padding: 10px 15px; font-size: 0.9rem; }
-            .dashboard-container { padding: 15px; }
-            .dashboard-header { flex-direction: column; align-items: flex-start; gap: 10px; }
-        }
-    </style>
+    .orders-grid { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+    @media (max-width: 900px){ .orders-grid { grid-template-columns: 1fr; } }
+
+    .order-card { background:var(--soft); border:1px solid #eaddd0; border-radius:12px; overflow:hidden; box-shadow:0 3px 10px rgba(0,0,0,.04); }
+    .card-header { display:flex; justify-content:space-between; align-items:center; padding:12px 14px; border-bottom:1px solid #eaddd0; }
+    .order-id { font-weight:800; color:var(--ink); }
+    .order-status { padding:6px 12px; border-radius:999px; font-size:12px; font-weight:800; }
+    .status-pending { background:#fff3cd; color:#664d03; }
+    .status-preparing { background:#cff4fc; color:#055160; }
+    .status-ready { background:#d1e7dd; color:#0f5132; }
+    .status-delivered { background:#e2e3e5; color:#41464b; }
+
+    .card-body { display:grid; grid-template-columns: 1fr 1fr; gap:12px; padding:14px; }
+    @media (max-width: 780px){ .card-body { grid-template-columns:1fr; } }
+
+    .detail-item { display:flex; gap:8px; font-size:14px; margin:2px 0; }
+    .detail-item strong { width:86px; color:#5c5c5c; font-weight:700; flex-shrink:0; }
+    .order-items-title { font-weight:800; color:var(--ink); margin-bottom:6px; font-size:14px; }
+    .order-item { display:flex; align-items:center; justify-content:space-between; padding:4px 0; font-size:14px; }
+
+    .card-footer { padding:12px 14px; border-top:1px dashed #e5d8c8; background: #fff; }
+    .action-buttons { display:flex; gap:8px; flex-wrap:wrap; }
+    .btn { border:0; border-radius:10px; padding:9px 14px; font-weight:800; color:#fff; cursor:pointer; transition:.2s; }
+    .btn:hover { opacity:.9; transform: translateY(-1px); }
+    .btn-warning { background:#ffc107; color:#333; }
+    .btn-success { background:#198754; }
+    .btn-info { background:#0dcaf0; }
+
+    .badge { display:inline-flex; align-items:center; gap:8px; padding:8px 10px; background:#fff; border:1px solid #eee; border-radius:10px; font-size:13px; color:#555; }
+    .badge b { color:#111; }
+
+    .topbar { display:flex; gap:8px; flex-wrap:wrap; }
+    .demo { background:#eef7ff; color:#0b5cab; border-color:#cde6ff; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <h1>☕</h1>
-            <div>
-                <h1>Payboss Cafe</h1>
-                <p>Dasbor Manajemen Pesanan</p>
-            </div>
-        </header>
-
-        <div class="role-selector">
-            <button class="role-btn active" onclick="switchView('cashier')">💰 Kasir</button>
-            <button class="role-btn" onclick="switchView('kitchen')">👨‍🍳 Dapur</button>
+  <div class="container">
+    <header class="header">
+      <div style="font-size:26px">☕</div>
+      <div>
+        <h1>Payboss Cafe</h1>
+        <div class="topbar">
+          <span class="badge">Status koneksi: <b id="conn">memeriksa…</b></span>
+          <span class="badge demo" id="demoFlag" style="display:none;">Demo Mode aktif</span>
         </div>
-        
-        <div class="dashboard-container">
-            <!-- Cashier View -->
-            <div id="cashier-view" class="view active">
-                <div class="dashboard-header">
-                    <h2>💰 Dasbor Kasir</h2>
-                    <div class="stats">Total Pesanan Hari Ini: <strong id="cashier-total-orders">0</strong></div>
-                </div>
-                <div id="cashier-orders" class="orders-grid">
-                    <div id="loading-indicator">Memuat pesanan...</div>
-                </div>
-            </div>
+      </div>
+    </header>
 
-            <!-- Kitchen View -->
-            <div id="kitchen-view" class="view">
-                <div class="dashboard-header">
-                    <h2>👨‍🍳 Dasbor Dapur</h2>
-                    <div class="stats">Pesanan Aktif: <strong id="kitchen-active-orders">0</strong></div>
-                </div>
-                <div id="kitchen-orders" class="orders-grid">
-                    <!-- Kitchen orders will be populated here -->
-                </div>
-            </div>
-        </div>
+    <div class="role-selector">
+      <button class="role-btn active" onclick="switchView('cashier')">💰 Kasir</button>
+      <button class="role-btn" onclick="switchView('kitchen')">👨‍🍳 Dapur</button>
     </div>
 
-    <script>
-        // -- PENGATURAN --
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwYZBB4E_CJtClEjRchz4RKEkQBV9969PZjW8Dng4taRnH6xx_-k9jUHCb4N7CsAdqwFQ/exec";
-        const REFRESH_INTERVAL = 15000; // Refresh setiap 15 detik
-        // -- AKHIR PENGATURAN --
-        
-        let allOrders = [];
-        let currentView = 'cashier';
+    <section class="dashboard">
+      <!-- Kasir -->
+      <div id="cashier-view" class="view active">
+        <div class="dashboard-header">
+          <h2>💰 Dasbor Kasir</h2>
+          <div class="stats">Total Pesanan Hari Ini: <strong id="cashier-total-orders">0</strong></div>
+        </div>
+        <div id="cashier-orders" class="orders-grid">
+          <div id="loading-indicator">Memuat pesanan…</div>
+        </div>
+      </div>
+      <!-- Dapur -->
+      <div id="kitchen-view" class="view">
+        <div class="dashboard-header">
+          <h2>👨‍🍳 Dasbor Dapur</h2>
+          <div class="stats">Pesanan Aktif: <strong id="kitchen-active-orders">0</strong></div>
+        </div>
+        <div id="kitchen-orders" class="orders-grid"></div>
+      </div>
+    </section>
+  </div>
 
-        document.addEventListener('DOMContentLoaded', () => {
-            fetchOrders();
-            setInterval(fetchOrders, REFRESH_INTERVAL);
-        });
+  <script>
+    // =====================
+    //  KONFIGURASI
+    // =====================
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwYZBB4E_CJtClEjRchz4RKEkQBV9969PZjW8Dng4taRnH6xx_-k9jUHCb4N7CsAdqwFQ/exec"; // ← URL Web App Anda
+    const REFRESH_INTERVAL = 15000; // 15s
 
-        function switchView(view) {
-            currentView = view;
-            document.querySelectorAll('.role-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            
-            document.querySelector(`.role-btn[onclick="switchView('${view}')"]`).classList.add('active');
-            document.getElementById(`${view}-view`).classList.add('active');
-            
-            renderDashboards();
-        }
+    let allOrders = [];
+    let currentView = 'cashier';
+    let demoMode = false;
 
-        async function fetchOrders() {
-            const loadingIndicator = document.getElementById('loading-indicator');
-            try {
-                // MENGGUNAKAN POST: Ini adalah metode paling stabil untuk Google Apps Script
-                // untuk menghindari masalah redirect yang menyebabkan 'Failed to fetch'.
-                const response = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    redirect: 'follow',
-                    headers: {
-                        'Content-Type': 'text/plain;charset=utf-8',
-                    },
-                    body: JSON.stringify({ action: 'getOrders' })
-                });
+    document.addEventListener('DOMContentLoaded', async () => {
+      await initConnection();
+      await fetchOrders();
+      setInterval(fetchOrders, REFRESH_INTERVAL);
+    });
 
-                if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
-                
-                const orders = await response.json();
-                allOrders = Array.isArray(orders) ? orders.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)) : [];
-                if (loadingIndicator) loadingIndicator.style.display = 'none';
-                renderDashboards();
-            } catch (error) {
-                console.error('Error fetching orders:', error);
-                if (loadingIndicator) loadingIndicator.textContent = 'Gagal memuat pesanan. Pastikan URL Skrip benar dan Apps Script di-deploy dengan benar.';
-            }
-        }
+    async function initConnection(){
+      const conn = document.getElementById('conn');
+      const demoFlag = document.getElementById('demoFlag');
+      // Demo mode jika URL belum diisi atau health check gagal
+      if (!SCRIPT_URL || /YOUR_WEB_APP_URL_HERE/i.test(SCRIPT_URL)) {
+        demoMode = true; conn.textContent = 'demo'; demoFlag.style.display='inline-flex';
+        return;
+      }
+      try{
+        const r = await fetch(`${SCRIPT_URL}?action=health&t=${Date.now()}`, { method:'GET', redirect:'follow' });
+        if(!r.ok){ throw new Error('HTTP '+r.status); }
+        const txt = await r.text();
+        try { JSON.parse(txt); } catch { throw new Error('Health bukan JSON'); }
+        conn.textContent = 'terhubung';
+      }catch(e){
+        demoMode = true; conn.textContent = 'demo (health gagal)'; demoFlag.style.display='inline-flex';
+        console.warn('[health]', e);
+      }
+    }
 
-        function renderDashboards() {
-            if (currentView === 'cashier') renderCashierDashboard();
-            else renderKitchenDashboard();
-        }
+    function switchView(view){
+      currentView = view;
+      document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+      document.querySelector(`.role-btn[onclick="switchView('${view}')"]`).classList.add('active');
+      document.getElementById(`${view}-view`).classList.add('active');
+      renderDashboards();
+    }
 
-        function renderCashierDashboard() {
-            const container = document.getElementById('cashier-orders');
-            const totalOrdersEl = document.getElementById('cashier-total-orders');
-            container.innerHTML = '';
-            
-            if (allOrders.length === 0) {
-                 container.innerHTML = '<p>Belum ada pesanan masuk.</p>';
-                 totalOrdersEl.textContent = 0;
-                 return;
-            }
-            totalOrdersEl.textContent = allOrders.length;
-            allOrders.forEach(order => container.appendChild(createOrderCard(order)));
-        }
-        
-        function renderKitchenDashboard() {
-            const container = document.getElementById('kitchen-orders');
-            const activeOrdersEl = document.getElementById('kitchen-active-orders');
-            container.innerHTML = '';
-            
-            const activeOrders = allOrders.filter(o => ['pending', 'preparing'].includes(o.status));
-            if (activeOrders.length === 0) {
-                 container.innerHTML = '<p>Tidak ada pesanan aktif untuk disiapkan.</p>';
-                 activeOrdersEl.textContent = 0;
-                 return;
-            }
-            activeOrdersEl.textContent = activeOrders.length;
-            activeOrders.forEach(order => container.appendChild(createOrderCard(order)));
-        }
+    async function fetchOrders(){
+      const loadingIndicator = document.getElementById('loading-indicator');
+      if (demoMode){
+        // Data contoh agar bisa langsung dipreview
+        allOrders = getMockOrders();
+        if (loadingIndicator) loadingIndicator.style.display='none';
+        renderDashboards();
+        return;
+      }
+      try{
+        const url = `${SCRIPT_URL}?action=getOrders&t=${Date.now()}`;
+        const res = await fetch(url, { method:'GET', redirect:'follow' });
+        if(!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
+        const text = await res.text();
+        let orders;
+        try { orders = JSON.parse(text); } catch { throw new Error('Response bukan JSON'); }
+        allOrders = Array.isArray(orders) ? orders : [];
+        if (loadingIndicator) loadingIndicator.style.display='none';
+        renderDashboards();
+      }catch(err){
+        console.error('[fetchOrders] Failed:', err);
+        if (loadingIndicator) loadingIndicator.textContent = 'Gagal memuat pesanan. Cek URL Web App & deployment (Anyone).';
+      }
+    }
 
-        function createOrderCard(order) {
-            const card = document.createElement('div');
-            card.className = `order-card`;
+    function renderDashboards(){
+      if(currentView==='cashier') renderCashier(); else renderKitchen();
+    }
 
-            const items = (typeof order.items === 'string') ? JSON.parse(order.items) : (order.items || []);
-            const itemsHtml = items.map(item => `
-                <div class="order-item">
-                    <span class="item-name-variant">${item.name} ${item.variant ? `(${item.variant})` : ''}</span>
-                    <strong class="item-quantity">${item.qty || item.quantity}x</strong>
-                </div>`).join('');
-            
-            const time = new Date(order.timestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+    function renderCashier(){
+      const container = document.getElementById('cashier-orders');
+      const total = document.getElementById('cashier-total-orders');
+      container.innerHTML = '';
+      if(!allOrders.length){ container.innerHTML='<p>Belum ada pesanan masuk.</p>'; total.textContent=0; return; }
+      total.textContent = allOrders.length;
+      allOrders.forEach(o => container.appendChild(createOrderCard(o)));
+    }
 
-            let detailsHtml = `
-                <div class="detail-item"><strong>Pelanggan:</strong> <span>${order.customerName}</span></div>
-                <div class="detail-item"><strong>Meja:</strong> <span>${order.tableNumber}</span></div>
-            `;
+    function renderKitchen(){
+      const container = document.getElementById('kitchen-orders');
+      const activeEl = document.getElementById('kitchen-active-orders');
+      container.innerHTML = '';
+      const active = allOrders.filter(o => ['pending','preparing'].includes((o.status||'').toLowerCase()));
+      if(!active.length){ container.innerHTML='<p>Tidak ada pesanan aktif untuk disiapkan.</p>'; activeEl.textContent=0; return; }
+      activeEl.textContent = active.length;
+      active.forEach(o => container.appendChild(createOrderCard(o)));
+    }
 
-            if (currentView === 'cashier') {
-                detailsHtml += `
-                    <div class="detail-item"><strong>HP:</strong> <span>${order.phoneNumber}</span></div>
-                    <div class="detail-item"><strong>Subtotal:</strong> <span>Rp ${parseInt(order.subtotal).toLocaleString()}</span></div>
-                    <div class="detail-item"><strong>Pajak:</strong> <span>Rp ${parseInt(order.tax).toLocaleString()}</span></div>
-                    <div class="detail-item"><strong>Total:</strong> <span>Rp ${parseInt(order.total).toLocaleString()}</span></div>
-                `;
-            }
-             detailsHtml += `<div class="detail-item"><strong>Waktu:</strong> <span>${time}</span></div>`;
+    function createOrderCard(order){
+      const card = document.createElement('div');
+      card.className = 'order-card';
 
-            let actionButtons = '';
-            if (currentView === 'kitchen') {
-                if (order.status === 'pending') actionButtons = `<button class="btn btn-warning" onclick="updateOrderStatus('${order.id}', 'preparing')">Mulai Masak</button>`;
-                else if (order.status === 'preparing') actionButtons = `<button class="btn btn-success" onclick="updateOrderStatus('${order.id}', 'ready')">Pesanan Siap</button>`;
-            } else if (currentView === 'cashier' && order.status === 'ready') {
-                actionButtons = `<button class="btn btn-info" onclick="updateOrderStatus('${order.id}', 'delivered')">Antar Pesanan</button>`;
-            }
-            
-            const statusMap = {
-                'pending': 'Menunggu', 'preparing': 'Dimasak',
-                'ready': 'Siap', 'delivered': 'Diantar'
-            };
+      const items = (typeof order.items === 'string') ? safeJsonParse(order.items, []) : (order.items || []);
+      const itemsHtml = items.map(it => `
+        <div class="order-item">
+          <span>${(it.name||'')}${it.variant?` (${it.variant})`:''}</span>
+          <strong>${it.qty || it.quantity || 0}x</strong>
+        </div>`).join('');
 
-            card.innerHTML = `
-                <div class="card-header">
-                    <div class="order-id">Pesanan ${order.id.replace('PBC', '#')}</div>
-                    <div class="order-status status-${order.status}">${statusMap[order.status] || 'N/A'}</div>
-                </div>
-                <div class="card-body">
-                    <div class="order-details">${detailsHtml}</div>
-                    <div class="order-items">
-                         <div class="order-items-title">Items:</div>
-                        ${itemsHtml}
-                    </div>
-                </div>
-                ${actionButtons ? `<div class="card-footer"><div class="action-buttons">${actionButtons}</div></div>` : ''}
-            `;
-            return card;
-        }
+      const time = order.timestamp ? new Date(order.timestamp).toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' }) : '-';
+      const money = n => (isFinite(n)? Number(n).toLocaleString('id-ID') : '0');
 
-        async function updateOrderStatus(orderId, newStatus) {
-            const order = allOrders.find(o => o.id === orderId);
-            const previousStatus = order ? order.status : null;
-            if (order) {
-                order.status = newStatus;
-                renderDashboards();
-            }
-            try {
-                await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    redirect: 'follow', // Menambahkan ini secara eksplisit untuk menangani redirect
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ action: 'updateStatus', orderId, status: newStatus })
-                });
-            } catch (error) {
-                console.error('Gagal memperbarui status:', error);
-                if(order && previousStatus) {
-                    order.status = previousStatus; 
-                    renderDashboards();
-                }
-                alert('Gagal memperbarui status. Periksa koneksi Anda.');
-            }
-        }
-    </script>
+      const status = (order.status||'pending').toLowerCase();
+      const statusMap = { pending:'Menunggu', preparing:'Dimasak', ready:'Siap', delivered:'Diantar' };
+
+      let actionButtons = '';
+      if(currentView==='kitchen'){
+        if(status==='pending') actionButtons = `<button class="btn btn-warning" onclick="updateOrderStatus('${order.id}','preparing')">Mulai Masak</button>`;
+        else if(status==='preparing') actionButtons = `<button class="btn btn-success" onclick="updateOrderStatus('${order.id}','ready')">Pesanan Siap</button>`;
+      } else if(currentView==='cashier' && status==='ready'){
+        actionButtons = `<button class="btn btn-info" onclick="updateOrderStatus('${order.id}','delivered')">Antar Pesanan</button>`;
+      }
+
+      card.innerHTML = `
+        <div class="card-header">
+          <div class="order-id">Pesanan ${(String(order.id||'').replace('PBC','#'))}</div>
+          <div class="order-status status-${status}">${statusMap[status]||'N/A'}</div>
+        </div>
+        <div class="card-body">
+          <div>
+            <div class="detail-item"><strong>Pelanggan:</strong><span>${order.customerName||''}</span></div>
+            <div class="detail-item"><strong>Meja:</strong><span>${order.tableNumber||''}</span></div>
+            ${ currentView==='cashier' ? `
+              <div class="detail-item"><strong>HP:</strong><span>${order.phoneNumber||''}</span></div>
+              <div class="detail-item"><strong>Subtotal:</strong><span>Rp ${money(order.subtotal)}</span></div>
+              <div class="detail-item"><strong>Pajak:</strong><span>Rp ${money(order.tax)}</span></div>
+              <div class="detail-item"><strong>Total:</strong><span>Rp ${money(order.total)}</span></div>
+            `: ''}
+            <div class="detail-item"><strong>Waktu:</strong><span>${time}</span></div>
+          </div>
+          <div>
+            <div class="order-items-title">Items:</div>
+            ${itemsHtml}
+          </div>
+        </div>
+        ${ actionButtons ? `<div class="card-footer"><div class="action-buttons">${actionButtons}</div></div>` : ''}
+      `;
+      return card;
+    }
+
+    function safeJsonParse(str, fb){ try { return JSON.parse(str); } catch { return fb; } }
+
+    async function updateOrderStatus(orderId, newStatus){
+      const o = allOrders.find(x => String(x.id) === String(orderId));
+      const prev = o ? o.status : null;
+      if(o){ o.status = newStatus; renderDashboards(); }
+
+      if(demoMode){ return; }
+      try{
+        const r = await fetch(SCRIPT_URL, { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ action:'updateStatus', orderId, status:newStatus }) });
+        if(!r.ok) throw new Error('HTTP '+r.status);
+      }catch(e){
+        console.error('[updateStatus] Failed:', e);
+        if(o && prev){ o.status = prev; renderDashboards(); }
+        alert('Gagal memperbarui status. Periksa koneksi & deployment Web App.');
+      }
+    }
+
+    function getMockOrders(){
+      const now = Date.now();
+      return [
+        { id:'PBC001', timestamp:new Date(now-5*60*1000).toISOString(), customerName:'Budi', tableNumber:'3', phoneNumber:'0812xxxx', items: JSON.stringify([{name:'Americano', qty:2},{name:'Cireng', qty:1}]), subtotal:30000, tax:3000, total:33000, status:'pending' },
+        { id:'PBC002', timestamp:new Date(now-12*60*1000).toISOString(), customerName:'Sari', tableNumber:'1', phoneNumber:'0813xxxx', items: JSON.stringify([{name:'Latte', qty:1},{name:'Wonton', qty:3}]), subtotal:45000, tax:4500, total:49500, status:'preparing' },
+        { id:'PBC003', timestamp:new Date(now-20*60*1000).toISOString(), customerName:'Andi', tableNumber:'5', phoneNumber:'0852xxxx', items: JSON.stringify([{name:'Jamur Crispy', qty:1}]), subtotal:18000, tax:1800, total:19800, status:'ready' }
+      ];
+    }
+  </script>
 </body>
 </html>
 
